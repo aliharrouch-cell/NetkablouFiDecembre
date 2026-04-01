@@ -117,7 +117,22 @@ body { font-family: var(--font-main); background: var(--bg); color: var(--text);
 .main { overflow-y: auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 28px; }
 
 /* ── PERIOD ── */
-.period-section { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color 0.3s; }
+.period-section {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: visible;
+  transition: border-color 0.3s;
+}
+
+.period-head {
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+
+.period-body {
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+}
 .period-section:hover { border-color: var(--border-hi); }
 .period-head {
   display: flex; align-items: center; justify-content: space-between;
