@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon Portfolio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- En-tete -->
+  <header>
+    <nav>
+      <span class="logo">Mon Portfolio</span>
+      <ul>
+        <li><a href="#about">A propos</a></li>
+        <li><a href="#victories">Victoires</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Bonjour, je suis <span class="highlight">Ton Nom</span></h1>
+      <p>Chaque jour est une nouvelle victoire.</p>
+      <a href="#victories" class="btn">Voir mes victoires</a>
+    </div>
+  </section>
+
+  <!-- A propos -->
+  <section id="about" class="section">
+    <h2>A propos de moi</h2>
+    <div class="about-card">
+      <div class="avatar">🙋</div>
+      <p>
+        Salut ! Je suis quelqu'un qui progresse chaque jour, une petite victoire
+        a la fois. Cette page est mon journal de bord de reussites, grandes et
+        petites.
+      </p>
+    </div>
+  </section>
+
+  <!-- Victoires quotidiennes -->
+  <section id="victories" class="section section-dark">
+    <h2>Mes victoires quotidiennes</h2>
+    <p class="section-subtitle">Chaque progres compte, meme le plus petit.</p>
+
+    <div class="victories-grid">
+
+      <div class="victory-card">
+        <span class="victory-icon">🏆</span>
+        <h3>Victoire du jour</h3>
+        <p>Jai cree ma premiere page web aujourd'hui !</p>
+        <span class="date">1 avril 2026</span>
+      </div>
+
+      <div class="victory-card">
+        <span class="victory-icon">📚</span>
+        <h3>J'ai appris</h3>
+        <p>J'ai compris comment fonctionne HTML et CSS.</p>
+        <span class="date">1 avril 2026</span>
+      </div>
+
+      <div class="victory-card">
+        <span class="victory-icon">🚀</span>
+        <h3>En ligne !</h3>
+        <p>Mon site est maintenant visible sur GitHub.</p>
+        <span class="date">1 avril 2026</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="section">
+    <h2>Me contacter</h2>
+    <div class="contact-links">
+      <a href="mailto:tonemail@exemple.com" class="contact-btn">📧 Email</a>
+      <a href="https://github.com/aliharrouch-cell" class="contact-btn">💻 GitHub</a>
+    </div>
+  </section>
+
+  <!-- Pied de page -->
+  <footer>
+    <p>Fait avec passion — <span id="year"></span></p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
