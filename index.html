@@ -1,998 +1,2123 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NetkablouFiDecembre</title>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NetkablouFiDecembre</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
-  --bg: #0f0f0f;
-  --surface: #161616;
-  --surface2: #1e1e1e;
-  --border: #2a2a2a; 
-  --border-hi: #3d3d3d;
-  --text: #e8e8e8;
-  --text-dim: #666;
-  --text-muted: #444;
-  --accent: #c8f060;
-  --accent-dim: rgba(200,240,96,0.12);
-  --accent-border: rgba(200,240,96,0.3);
-  --day-color: #60c8f0;
-  --week-color: #f0a060;
-  --month-color: #c060f0;
-  --day-dim: rgba(96,200,240,0.10);
-  --week-dim: rgba(240,160,96,0.10);
-  --month-dim: rgba(192,96,240,0.10);
-  --day-border: rgba(96,200,240,0.28);
-  --week-border: rgba(240,160,96,0.28);
-  --month-border: rgba(192,96,240,0.28);
-  --danger: #f06060;
-  --radius: 10px;
-  --font-main: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-mono: "SF Mono","Fira Mono","Consolas","Courier New",monospace;
-  --font-serif: Georgia,"Times New Roman",serif;
-}
+    :root {
+      --bg: #0f0f0f;
+      --surface: #161616;
+      --surface2: #1e1e1e;
+      --border: #2a2a2a;
+      --border-hi: #3d3d3d;
+      --text: #e8e8e8;
+      --text-dim: #8a8a8a;
+      --text-muted: #555;
+      --accent: #c8f060;
+      --accent-dim: rgba(200,240,96,0.12);
+      --accent-border: rgba(200,240,96,0.3);
+      --day-color: #60c8f0;
+      --week-color: #f0a060;
+      --month-color: #c060f0;
+      --day-dim: rgba(96,200,240,0.10);
+      --week-dim: rgba(240,160,96,0.10);
+      --month-dim: rgba(192,96,240,0.10);
+      --day-border: rgba(96,200,240,0.28);
+      --week-border: rgba(240,160,96,0.28);
+      --month-border: rgba(192,96,240,0.28);
+      --danger: #f06060;
+      --radius: 10px;
+      --font-main: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+      --font-mono: "SF Mono","Fira Mono","Consolas","Courier New",monospace;
+      --font-serif: Georgia,"Times New Roman",serif;
+    }
 
-html { scroll-behavior: smooth; }
-body { font-family: var(--font-main); background: var(--bg); color: var(--text); min-height: 100vh; }
-.app { display: grid; grid-template-columns: 290px 1fr; grid-template-rows: auto 1fr; min-height: 100vh; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-main);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-/* ── HEADER ── */
-.app-header {
-  grid-column: 1/-1; padding: 16px 32px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between; background: var(--surface);
-}
-.logo-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.5px; }
-.logo-title span { color: var(--accent); }
-.logo-tag { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-family: var(--font-mono); }
-.header-right { display: flex; align-items: center; gap: 16px; }
-.date-display { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); letter-spacing: 1px; }
-.sync-status {
-  display: flex; align-items: center; gap: 6px; font-family: var(--font-mono);
-  font-size: 11px; color: var(--text-dim); padding: 4px 10px; border-radius: 20px;
-  border: 1px solid var(--border); background: var(--surface2);
-}
-.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-muted); transition: background 0.4s; }
-.sync-dot.syncing { background: var(--accent); animation: pulse 1s infinite; }
-.sync-dot.ok { background: #60f090; }
-.sync-dot.error { background: var(--danger); }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .hidden { display: none !important; }
 
-/* ── LOADING ── */
-.loading-overlay {
-  position: fixed; inset: 0; background: var(--bg);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 16px; z-index: 100; transition: opacity 0.5s;
-}
-.loading-overlay.hidden { opacity: 0; pointer-events: none; }
-.loading-spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); }
+    .app {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      grid-template-rows: auto 1fr;
+      min-height: 100vh;
+    }
 
-/* ── SIDEBAR ── */
-.sidebar {
-  border-right: 1px solid var(--border); background: var(--surface);
-  padding: 24px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 28px;
-}
-.score-block { display: flex; flex-direction: column; gap: 10px; }
-.score-card { border-radius: var(--radius); padding: 14px 18px; border: 1px solid; }
-.score-card.day   { background: var(--day-dim);   border-color: var(--day-border);   color: var(--day-color); }
-.score-card.week  { background: var(--week-dim);  border-color: var(--week-border);  color: var(--week-color); }
-.score-card.month { background: var(--month-dim); border-color: var(--month-border); color: var(--month-color); }
-.score-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; font-family: var(--font-mono); }
-.score-pts { font-size: 2.2rem; font-weight: 800; line-height: 1; margin: 4px 0 2px; }
-.score-detail { font-size: 11px; opacity: 0.6; font-family: var(--font-mono); }
-.history-block { flex: 1; }
-.sidebar-section-title {
-  font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted);
-  margin-bottom: 10px; font-family: var(--font-mono); display: flex; align-items: center; gap: 8px;
-}
-.sidebar-section-title::after { content:''; flex:1; height:1px; background:var(--border); }
-.history-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
-.hist-tab {
-  flex: 1; padding: 6px 4px; font-size: 11px; font-weight: 700;
-  border: 1px solid var(--border); border-radius: 6px; background: none;
-  color: var(--text-dim); cursor: pointer; transition: all 0.2s; font-family: var(--font-main);
-}
-.hist-tab.active.day   { background:var(--day-dim);   border-color:var(--day-border);   color:var(--day-color); }
-.hist-tab.active.week  { background:var(--week-dim);  border-color:var(--week-border);  color:var(--week-color); }
-.hist-tab.active.month { background:var(--month-dim); border-color:var(--month-border); color:var(--month-color); }
-.history-list { display: flex; flex-direction: column; gap: 3px; max-height: 280px; overflow-y: auto; }
-.hist-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 7px 10px; border-radius: 6px; font-size: 12px;
-  font-family: var(--font-mono); border: 1px solid transparent; transition: border-color 0.2s;
-}
-.hist-row:hover { border-color: var(--border); }
-.hist-date { color: var(--text-dim); }
-.hist-pts { font-weight: 500; padding: 2px 7px; border-radius: 4px; font-size: 11px; }
-.hist-pts.day   { background:var(--day-dim);   color:var(--day-color); }
-.hist-pts.week  { background:var(--week-dim);  color:var(--week-color); }
-.hist-pts.month { background:var(--month-dim); color:var(--month-color); }
-.no-hist { font-size: 12px; color: var(--text-muted); font-style: italic; padding: 6px 0; }
+    /* HEADER */
+    .app-header {
+      grid-column: 1/-1;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+    }
+    .logo-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.5px; }
+    .logo-title span { color: var(--accent); }
+    .logo-tag {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .date-display {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+    .sync-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .sync-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: background 0.4s;
+    }
+    .sync-dot.syncing { background: var(--accent); animation: pulse 1s infinite; }
+    .sync-dot.ok { background: #60f090; }
+    .sync-dot.error { background: var(--danger); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-/* ── MAIN ── */
-.main { overflow-y: auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 28px; }
+    /* LOADING */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 100;
+      transition: opacity 0.5s;
+    }
+    .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-dim);
+    }
 
-/* ── PERIOD ── */
-.period-section {
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: visible;
-  transition: border-color 0.3s;
-}
+    /* SIDEBAR */
+    .sidebar {
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      padding: 24px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .score-block { display: flex; flex-direction: column; gap: 10px; }
+    .score-card { border-radius: var(--radius); padding: 14px 18px; border: 1px solid; }
+    .score-card.day   { background: var(--day-dim);   border-color: var(--day-border);   color: var(--day-color); }
+    .score-card.week  { background: var(--week-dim);  border-color: var(--week-border);  color: var(--week-color); }
+    .score-card.month { background: var(--month-dim); border-color: var(--month-border); color: var(--month-color); }
+    .score-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; font-family: var(--font-mono); }
+    .score-pts { font-size: 2.2rem; font-weight: 800; line-height: 1; margin: 4px 0 2px; }
+    .score-detail { font-size: 11px; opacity: 0.7; font-family: var(--font-mono); line-height: 1.4; }
 
-.period-head {
-  border-top-left-radius: 14px;
-  border-top-right-radius: 14px;
-}
+    .history-block { flex: 1; }
+    .sidebar-section-title {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar-section-title::after {
+      content:'';
+      flex:1;
+      height:1px;
+      background:var(--border);
+    }
+    .history-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+    .hist-tab {
+      flex: 1;
+      padding: 6px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-main);
+    }
+    .hist-tab.active.day   { background:var(--day-dim);   border-color:var(--day-border);   color:var(--day-color); }
+    .hist-tab.active.week  { background:var(--week-dim);  border-color:var(--week-border);  color:var(--week-color); }
+    .hist-tab.active.month { background:var(--month-dim); border-color:var(--month-border); color:var(--month-color); }
+    .history-list { display: flex; flex-direction: column; gap: 3px; max-height: 280px; overflow-y: auto; }
+    .hist-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .hist-row:hover { border-color: var(--border); }
+    .hist-date { color: var(--text-dim); }
+    .hist-pts { font-weight: 500; padding: 2px 7px; border-radius: 4px; font-size: 11px; }
+    .hist-pts.day   { background:var(--day-dim);   color:var(--day-color); }
+    .hist-pts.week  { background:var(--week-dim);  color:var(--week-color); }
+    .hist-pts.month { background:var(--month-dim); color:var(--month-color); }
+    .no-hist { font-size: 12px; color: var(--text-muted); font-style: italic; padding: 6px 0; }
 
-.period-body {
-  border-bottom-left-radius: 14px;
-  border-bottom-right-radius: 14px;
-}
-.period-section:hover { border-color: var(--border-hi); }
-.period-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 22px; border-bottom: 1px solid var(--border);
-}
-.period-head.day   { background: var(--day-dim); }
-.period-head.week  { background: var(--week-dim); }
-.period-head.month { background: var(--month-dim); }
-.period-info { display: flex; align-items: center; gap: 12px; }
-.period-badge {
-  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  padding: 3px 10px; border-radius: 20px; border: 1px solid; font-family: var(--font-mono);
-}
-.day   .period-badge { background:var(--day-dim);   border-color:var(--day-border);   color:var(--day-color); }
-.week  .period-badge { background:var(--week-dim);  border-color:var(--week-border);  color:var(--week-color); }
-.month .period-badge { background:var(--month-dim); border-color:var(--month-border); color:var(--month-color); }
-.period-name { font-size: 1.05rem; font-weight: 700; font-family: var(--font-serif); font-style: italic; }
-.period-score { display: flex; align-items: baseline; gap: 5px; font-family: var(--font-mono); }
-.pts-val { font-size: 1.7rem; font-weight: 800; line-height: 1; }
-.day   .pts-val { color: var(--day-color); }
-.week  .pts-val { color: var(--week-color); }
-.month .pts-val { color: var(--month-color); }
-.pts-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+    /* MAIN */
+    .main { overflow-y: auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 28px; }
 
-.period-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; }
-.sub-title { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 6px; }
-.section-div { border: none; border-top: 1px solid var(--border); margin: 2px 0; }
+    /* PERIOD */
+    .period-section {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: visible;
+      transition: border-color 0.3s;
+    }
+    .period-section:hover { border-color: var(--border-hi); }
+    .period-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border);
+      border-top-left-radius: 14px;
+      border-top-right-radius: 14px;
+    }
+    .period-head.day   { background: var(--day-dim); }
+    .period-head.week  { background: var(--week-dim); }
+    .period-head.month { background: var(--month-dim); }
 
-/* ── OBJ ITEMS ── */
-.objectives-list { display: flex; flex-direction: column; gap: 5px; }
+    .period-info { display: flex; align-items: center; gap: 12px; }
+    .period-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid;
+      font-family: var(--font-mono);
+    }
+    .day .period-badge   { background:var(--day-dim);   border-color:var(--day-border);   color:var(--day-color); }
+    .week .period-badge  { background:var(--week-dim);  border-color:var(--week-border);  color:var(--week-color); }
+    .month .period-badge { background:var(--month-dim); border-color:var(--month-border); color:var(--month-color); }
 
-.obj-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
-  background: var(--surface2); transition: border-color 0.2s, background 0.3s, opacity 0.2s;
-  user-select: none;
-}
-.obj-item:hover { border-color: var(--border-hi); }
-.obj-item.checked { opacity: 0.5; }
-.obj-item.dragging { opacity: 0.3; border-style: dashed; }
-.obj-item.drag-over { border-color: var(--accent); }
+    .period-name { font-size: 1.05rem; font-weight: 700; font-family: var(--font-serif); font-style: italic; }
+    .period-score { display: flex; align-items: baseline; gap: 5px; font-family: var(--font-mono); }
+    .pts-val { font-size: 1.7rem; font-weight: 800; line-height: 1; }
+    .day .pts-val   { color: var(--day-color); }
+    .week .pts-val  { color: var(--week-color); }
+    .month .pts-val { color: var(--month-color); }
+    .pts-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
 
-.drag-handle { cursor: grab; color: var(--text-muted); font-size: 14px; flex-shrink: 0; touch-action: none; line-height: 1; }
-.drag-handle:active { cursor: grabbing; }
+    .period-body {
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
+    }
 
-.custom-check {
-  width: 19px; height: 19px; border-radius: 5px; border: 2px solid var(--border-hi);
-  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s; font-size: 11px; color: #0f0f0f; font-weight: 800; cursor: pointer;
-}
-.day  .obj-item.checked .custom-check { background:var(--day-color);   border-color:var(--day-color); }
-.week .obj-item.checked .custom-check { background:var(--week-color);  border-color:var(--week-color); }
-.month.period-section .obj-item.checked .custom-check { background:var(--month-color); border-color:var(--month-color); }
+    .sub-title {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-bottom: 6px;
+    }
+    .section-div { border: none; border-top: 1px solid var(--border); margin: 2px 0; }
 
-/* emoji display on item */
-.item-emoji { font-size: 1.3rem; flex-shrink: 0; line-height: 1; cursor: pointer; }
-.item-emoji.empty { font-size: 1rem; opacity: 0.3; }
+    /* ITEMS */
+    .objectives-list, .free-entries {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
 
-.obj-text { flex: 1; font-size: 14px; font-weight: 500; cursor: pointer; }
-.obj-item.checked .obj-text { text-decoration: line-through; color: var(--text-dim); }
+    .obj-item, .free-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      transition: border-color 0.2s, background 0.3s, opacity 0.2s;
+      user-select: none;
+      position: relative;
+      overflow: visible;
+    }
+    .obj-item:hover, .free-item:hover { border-color: var(--border-hi); }
+    .obj-item.checked { opacity: 0.72; }
+    .obj-item.dragging, .free-item.dragging { opacity: 0.3; border-style: dashed; }
+    .obj-item.drag-over, .free-item.drag-over { border-color: var(--accent); }
 
-/* pts badge */
-.obj-pts-wrap { position: relative; flex-shrink: 0; }
-.obj-pts {
-  font-family: var(--font-mono); font-size: 12px; padding: 3px 8px;
-  border-radius: 4px; border: 1px solid; white-space: nowrap; cursor: pointer; transition: filter 0.2s;
-}
-.obj-pts:hover { filter: brightness(1.3); }
-.day   .obj-pts { background:var(--day-dim);   border-color:var(--day-border);   color:var(--day-color); }
-.week  .obj-pts { background:var(--week-dim);  border-color:var(--week-border);  color:var(--week-color); }
-.month.period-section .obj-pts { background:var(--month-dim); border-color:var(--month-border); color:var(--month-color); }
+    .drag-handle, .free-drag {
+      cursor: grab;
+      color: var(--text-muted);
+      font-size: 14px;
+      flex-shrink: 0;
+      touch-action: none;
+      line-height: 1;
+    }
+    .drag-handle:active, .free-drag:active { cursor: grabbing; }
 
-.obj-delete {
-  background: none; border: none; color: var(--text-muted); cursor: pointer;
-  font-size: 13px; padding: 2px 4px; border-radius: 4px; opacity: 0; transition: all 0.2s; flex-shrink: 0;
-}
-.obj-item:hover .obj-delete { opacity: 1; }
-.obj-delete:hover { color: var(--danger); background: rgba(240,96,96,0.1); }
+    .custom-check {
+      width: 19px;
+      height: 19px;
+      border-radius: 5px;
+      border: 2px solid var(--border-hi);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      font-size: 11px;
+      color: #0f0f0f;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .day .obj-item.checked .custom-check { background:var(--day-color); border-color:var(--day-color); }
+    .week .obj-item.checked .custom-check { background:var(--week-color); border-color:var(--week-color); }
+    .month.period-section .obj-item.checked .custom-check { background:var(--month-color); border-color:var(--month-color); }
 
-/* ── FREE ITEMS ── */
-.free-entries { display: flex; flex-direction: column; gap: 4px; }
-.free-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 12px; border-radius: 7px; border: 1px solid var(--border);
-  background: rgba(255,255,255,0.018); font-size: 13px;
-  user-select: none; transition: border-color 0.2s, background 0.3s;
-}
-.free-item:hover { border-color: var(--border-hi); }
-.free-item.dragging { opacity: 0.3; border-style: dashed; }
-.free-item.drag-over { border-color: var(--accent); }
-.free-drag { cursor: grab; color: var(--text-muted); font-size: 14px; flex-shrink: 0; touch-action: none; }
-.free-drag:active { cursor: grabbing; }
-.free-text { flex: 1; color: var(--text-dim); }
-.free-pts-wrap { position: relative; flex-shrink: 0; }
-.free-pts {
-  font-family: var(--font-mono); font-size: 11px; padding: 2px 7px;
-  border-radius: 4px; color: var(--accent); background: var(--accent-dim);
-  border: 1px solid var(--accent-border); cursor: pointer; transition: filter 0.2s;
-}
-.free-pts:hover { filter: brightness(1.3); }
-.free-del {
-  background: none; border: none; color: var(--text-muted); cursor: pointer;
-  font-size: 13px; padding: 2px 4px; border-radius: 4px; opacity: 0; transition: all 0.2s; flex-shrink: 0;
-}
-.free-item:hover .free-del { opacity: 1; }
-.free-del:hover { color: var(--danger); background: rgba(240,96,96,0.1); }
+    .metric-tag {
+      width: 19px;
+      height: 19px;
+      border-radius: 5px;
+      border: 1px solid var(--accent-border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+    }
 
-/* ── INLINE EDITORS (pts + emoji) ── */
-.pts-inline-editor, .emoji-picker-popup {
-  position: absolute; right: 0; top: calc(100% + 6px); z-index: 50;
-  background: var(--surface); border: 1px solid var(--accent-border);
-  border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-}
-.pts-inline-editor {
-  padding: 8px; display: flex; gap: 6px; align-items: center; min-width: 160px;
-}
-.pts-inline-editor input {
-  width: 64px; background: var(--surface2); border: 1px solid var(--border-hi);
-  border-radius: 5px; color: var(--text); font-family: var(--font-mono); font-size: 13px; padding: 5px 8px; outline: none;
-}
-.pts-inline-editor input:focus { border-color: var(--accent); }
-.pts-inline-editor button { background:var(--accent); border:none; border-radius:5px; color:#0f0f0f; font-weight:700; font-size:12px; padding:5px 10px; cursor:pointer; }
-.pts-editor-label { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+    .item-emoji {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .item-emoji.empty { font-size: 1rem; opacity: 0.3; }
 
-/* ── EMOJI PICKER ── */
-.emoji-picker-popup {
-  padding: 10px; width: 260px; right: auto; left: 0;
-}
-.emoji-search {
-  width: 100%; background: var(--surface2); border: 1px solid var(--border-hi);
-  border-radius: 6px; color: var(--text); font-family: var(--font-main);
-  font-size: 13px; padding: 6px 10px; outline: none; margin-bottom: 8px;
-}
-.emoji-search:focus { border-color: var(--accent); }
-.emoji-grid {
-  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
-  max-height: 180px; overflow-y: auto;
-}
-.emoji-btn {
-  background: none; border: none; font-size: 1.3rem; cursor: pointer;
-  padding: 4px; border-radius: 5px; transition: background 0.15s; line-height: 1.4;
-}
-.emoji-btn:hover { background: var(--border-hi); }
-.emoji-none {
-  grid-column: 1/-1; font-size: 11px; color: var(--text-muted);
-  text-align: center; padding: 8px 0; font-style: italic;
-}
-.emoji-clear {
-  width: 100%; margin-top: 8px; background: none; border: 1px solid var(--border);
-  border-radius: 6px; color: var(--text-muted); font-size: 11px; padding: 5px;
-  cursor: pointer; transition: all 0.2s;
-}
-.emoji-clear:hover { border-color: var(--danger); color: var(--danger); }
+    .item-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .obj-text, .free-text {
+      font-size: 14px;
+      font-weight: 500;
+      min-width: 0;
+      word-break: break-word;
+    }
+    .obj-item.checked .obj-text.fixed-strike {
+      text-decoration: line-through;
+      color: var(--text-dim);
+    }
+    .obj-sub, .free-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      margin-top: 3px;
+      line-height: 1.35;
+    }
 
-/* ── FORMS ── */
-.mini-form {
-  display: flex; gap: 7px; align-items: center;
-  padding: 11px 13px; border: 1px dashed var(--border-hi);
-  border-radius: 8px; background: rgba(255,255,255,0.01); margin-top: 5px;
-}
-.mini-form input {
-  background: var(--surface); border: 1px solid var(--border-hi); border-radius: 6px;
-  color: var(--text); font-family: var(--font-main); font-size: 13px; padding: 7px 10px;
-  outline: none; transition: border-color 0.2s;
-}
-.mini-form input:focus { border-color: var(--accent); }
-.mini-form input::placeholder { color: var(--text-muted); }
-.mini-form input.f-text { flex: 1; min-width: 0; }
-.mini-form input.f-pts { width: 62px; }
+    .qty-box {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+    .qty-box button {
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
+      color: var(--text);
+      border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+    }
+    .qty-box button:hover { border-color: var(--accent); }
+    .qty-box input {
+      width: 70px;
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 6px 8px;
+      outline: none;
+      text-align: center;
+    }
+    .qty-box input:focus { border-color: var(--accent); }
+    .qty-unit {
+      min-width: 28px;
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
 
-/* emoji selector in form */
-.f-emoji-wrap { position: relative; flex-shrink: 0; }
-.f-emoji-btn {
-  background: var(--surface); border: 1px solid var(--border-hi); border-radius: 6px;
-  width: 38px; height: 38px; font-size: 1.2rem; cursor: pointer; display: flex;
-  align-items: center; justify-content: center; transition: border-color 0.2s;
-}
-.f-emoji-btn:hover { border-color: var(--accent); }
-.f-emoji-btn.has-emoji { border-color: var(--accent-border); }
+    .obj-pts-wrap, .free-pts-wrap { position: relative; flex-shrink: 0; }
+    .obj-pts, .free-pts {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: filter 0.2s;
+    }
+    .obj-pts:hover, .free-pts:hover { filter: brightness(1.2); }
 
-.btn-mini {
-  background: var(--accent); border: none; border-radius: 6px; color: #0f0f0f;
-  font-family: var(--font-main); font-size: 12px; font-weight: 700;
-  padding: 7px 14px; cursor: pointer; white-space: nowrap; transition: opacity 0.2s, transform 0.15s;
-}
-.btn-mini:hover { opacity: 0.85; transform: translateY(-1px); }
+    .day .obj-pts   { background:var(--day-dim);   border-color:var(--day-border);   color:var(--day-color); }
+    .week .obj-pts  { background:var(--week-dim);  border-color:var(--week-border);  color:var(--week-color); }
+    .month.period-section .obj-pts { background:var(--month-dim); border-color:var(--month-border); color:var(--month-color); }
 
-.toggle-btn {
-  background: none; border: 1px dashed var(--border); border-radius: 7px;
-  color: var(--text-muted); font-family: var(--font-main); font-size: 12px;
-  padding: 8px 14px; cursor: pointer; display: flex; align-items: center; gap: 6px;
-  transition: all 0.2s; width: 100%; margin-top: 6px;
-}
-.toggle-btn:hover { color: var(--text-dim); border-color: var(--border-hi); }
-.obj-add-form, .free-add-form { display: none; }
-.obj-add-form.open, .free-add-form.open { display: flex; }
+    .free-pts {
+      color: var(--accent);
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+    }
 
-.no-items { font-size: 12px; color: var(--text-muted); font-style: italic; padding: 4px 2px; font-family: var(--font-serif); }
+    .obj-delete, .free-del {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .obj-item:hover .obj-delete, .free-item:hover .free-del { opacity: 1; }
+    .obj-delete:hover, .free-del:hover {
+      color: var(--danger);
+      background: rgba(240,96,96,0.1);
+    }
 
-@keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.06)} 100%{transform:scale(1)} }
-.pop { animation: pop 0.22s ease; }
+    /* INLINE EDITORS */
+    .pts-inline-editor, .metric-inline-editor, .emoji-picker-popup {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      z-index: 9999;
+      background: var(--surface);
+      border: 1px solid var(--accent-border);
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 4px; }
+    .pts-inline-editor {
+      padding: 8px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      min-width: 170px;
+    }
+    .pts-inline-editor input {
+      width: 70px;
+      background: var(--surface2);
+      border: 1px solid var(--border-hi);
+      border-radius: 5px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 5px 8px;
+      outline: none;
+    }
+    .pts-inline-editor input:focus { border-color: var(--accent); }
+    .pts-inline-editor button,
+    .metric-inline-editor button {
+      background: var(--accent);
+      border: none;
+      border-radius: 5px;
+      color: #0f0f0f;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .pts-editor-label { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
 
-/* hidden canvas for emoji color extraction */
-#emoji-canvas { display: none; }
+    .metric-inline-editor {
+      padding: 10px;
+      min-width: 260px;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .metric-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .metric-field label {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: var(--font-mono);
+    }
+    .metric-field input {
+      background: var(--surface2);
+      border: 1px solid var(--border-hi);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+      padding: 7px 9px;
+      outline: none;
+    }
+    .metric-field input:focus { border-color: var(--accent); }
+    .metric-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
 
-@media (max-width: 720px) {
-  .app { grid-template-columns: 1fr; }
-  .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
-  .main { padding: 20px 16px; }
-}
-</style>
+    /* EMOJI PICKER */
+    .emoji-picker-popup {
+      padding: 10px;
+      width: 260px;
+      right: auto;
+      left: 0;
+    }
+    .emoji-search {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border-hi);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 13px;
+      padding: 6px 10px;
+      outline: none;
+      margin-bottom: 8px;
+    }
+    .emoji-search:focus { border-color: var(--accent); }
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .emoji-btn {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 5px;
+      transition: background 0.15s;
+      line-height: 1.4;
+    }
+    .emoji-btn:hover { background: var(--border-hi); }
+    .emoji-none {
+      grid-column: 1/-1;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 8px 0;
+      font-style: italic;
+    }
+    .emoji-clear {
+      width: 100%;
+      margin-top: 8px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .emoji-clear:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* FORMS */
+    .mini-form {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px 13px;
+      border: 1px dashed var(--border-hi);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.01);
+      margin-top: 6px;
+    }
+    .obj-add-form.open, .free-add-form.open { display: flex; }
+
+    .mode-switch {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .mode-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-btn.active {
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .form-line {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .mini-form input {
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 13px;
+      padding: 8px 10px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .mini-form input:focus { border-color: var(--accent); }
+    .mini-form input::placeholder { color: var(--text-muted); }
+
+    .f-text { flex: 1; min-width: 220px; }
+    .f-pts, .f-rate, .f-value { width: 110px; }
+    .f-unit { width: 110px; }
+
+    .f-emoji-wrap { position: relative; flex-shrink: 0; }
+    .f-emoji-btn {
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
+      border-radius: 6px;
+      width: 38px;
+      height: 38px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s;
+    }
+    .f-emoji-btn:hover { border-color: var(--accent); }
+    .f-emoji-btn.has-emoji { border-color: var(--accent-border); }
+
+    .btn-mini {
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: #0f0f0f;
+      font-family: var(--font-main);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-mini:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .toggle-btn {
+      background: none;
+      border: 1px dashed var(--border);
+      border-radius: 7px;
+      color: var(--text-muted);
+      font-family: var(--font-main);
+      font-size: 12px;
+      padding: 8px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      width: 100%;
+      margin-top: 6px;
+    }
+    .toggle-btn:hover { color: var(--text-dim); border-color: var(--border-hi); }
+
+    .no-items {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 4px 2px;
+      font-family: var(--font-serif);
+    }
+
+    @keyframes pop {
+      0% { transform:scale(1); }
+      40% { transform:scale(1.06); }
+      100% { transform:scale(1); }
+    }
+    .pop { animation: pop 0.22s ease; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 4px; }
+
+    #emoji-canvas { display: none; }
+
+    @media (max-width: 920px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+
+    @media (max-width: 720px) {
+      .main { padding: 20px 16px; }
+      .app-header { padding: 16px; align-items: flex-start; gap: 12px; flex-direction: column; }
+      .header-right { width: 100%; justify-content: space-between; }
+      .qty-box { width: 100%; justify-content: flex-start; margin-left: 0; }
+      .f-text { min-width: 0; width: 100%; }
+    }
+  </style>
 </head>
 <body>
+  <canvas id="emoji-canvas" width="32" height="32"></canvas>
 
-<canvas id="emoji-canvas" width="32" height="32"></canvas>
+  <div class="loading-overlay" id="loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Chargement de NetkablouFiDecembre…</div>
+  </div>
 
-<div class="loading-overlay" id="loading">
-  <div class="loading-spinner"></div>
-  <div class="loading-text">Chargement de NetkablouFiDecembre…</div>
-</div>
-
-<div class="app">
-  <header class="app-header">
-    <div class="logo">
-      <div class="logo-title">Netkablou<span>Fi</span>Décembre</div>
-      <div class="logo-tag">Victory Tracker</div>
-    </div>
-    <div class="header-right">
-      <div class="sync-status">
-        <div class="sync-dot" id="sync-dot"></div>
-        <span id="sync-label">—</span>
+  <div class="app">
+    <header class="app-header">
+      <div class="logo">
+        <div class="logo-title">Netkablou<span>Fi</span>Décembre</div>
+        <div class="logo-tag">Victory Tracker</div>
       </div>
-      <div class="date-display" id="date-display"></div>
-    </div>
-  </header>
-
-  <aside class="sidebar">
-    <div class="score-block">
-      <div class="score-card day">
-        <div class="score-label">Aujourd'hui</div>
-        <div class="score-pts" id="sc-day">0</div>
-        <div class="score-detail" id="sc-day-detail">—</div>
-      </div>
-      <div class="score-card week">
-        <div class="score-label">Cette semaine</div>
-        <div class="score-pts" id="sc-week">0</div>
-        <div class="score-detail" id="sc-week-detail">—</div>
-      </div>
-      <div class="score-card month">
-        <div class="score-label">Ce mois</div>
-        <div class="score-pts" id="sc-month">0</div>
-        <div class="score-detail" id="sc-month-detail">—</div>
-      </div>
-    </div>
-    <div class="history-block">
-      <div class="sidebar-section-title">Historique</div>
-      <div class="history-tabs">
-        <button class="hist-tab active day"  onclick="setHistTab('day',this)">Jours</button>
-        <button class="hist-tab week"        onclick="setHistTab('week',this)">Semaines</button>
-        <button class="hist-tab month"       onclick="setHistTab('month',this)">Mois</button>
-      </div>
-      <div class="history-list" id="history-list"></div>
-    </div>
-  </aside>
-
-  <main class="main">
-
-    <!-- JOURNALIER -->
-    <div class="period-section day">
-      <div class="period-head day">
-        <div class="period-info">
-          <span class="period-badge">Quotidien</span>
-          <span class="period-name">Objectifs du jour</span>
+      <div class="header-right">
+        <div class="sync-status">
+          <div class="sync-dot" id="sync-dot"></div>
+          <span id="sync-label">—</span>
         </div>
-        <div class="period-score"><span class="pts-val" id="pts-day">0</span><span class="pts-label">pts</span></div>
+        <div class="date-display" id="date-display"></div>
       </div>
-      <div class="period-body">
-        <div>
-          <div class="sub-title">Objectifs récurrents</div>
-          <div class="objectives-list" id="obj-list-day"></div>
-          <button class="toggle-btn" onclick="toggleForm('obj-form-day','obj-text-day')">＋ Ajouter un objectif récurrent</button>
-          <div class="mini-form obj-add-form" id="obj-form-day">
-            <div class="f-emoji-wrap"><button class="f-emoji-btn" id="f-emoji-obj-day" onclick="openFormEmoji(event,'obj','day')">＋</button></div>
-            <input class="f-text" type="text" placeholder="Nom de l'objectif…" id="obj-text-day">
-            <input class="f-pts" type="number" placeholder="pts" min="1" id="obj-pts-day">
-            <button class="btn-mini" onclick="addObjective('day')">Ajouter</button>
+    </header>
+
+    <aside class="sidebar">
+      <div class="score-block">
+        <div class="score-card day">
+          <div class="score-label">Aujourd'hui</div>
+          <div class="score-pts" id="sc-day">0</div>
+          <div class="score-detail" id="sc-day-detail">—</div>
+        </div>
+        <div class="score-card week">
+          <div class="score-label">Cette semaine</div>
+          <div class="score-pts" id="sc-week">0</div>
+          <div class="score-detail" id="sc-week-detail">—</div>
+        </div>
+        <div class="score-card month">
+          <div class="score-label">Ce mois</div>
+          <div class="score-pts" id="sc-month">0</div>
+          <div class="score-detail" id="sc-month-detail">—</div>
+        </div>
+      </div>
+
+      <div class="history-block">
+        <div class="sidebar-section-title">Historique</div>
+        <div class="history-tabs">
+          <button class="hist-tab active day" onclick="setHistTab('day',this)">Jours</button>
+          <button class="hist-tab week" onclick="setHistTab('week',this)">Semaines</button>
+          <button class="hist-tab month" onclick="setHistTab('month',this)">Mois</button>
+        </div>
+        <div class="history-list" id="history-list"></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- JOUR -->
+      <div class="period-section day">
+        <div class="period-head day">
+          <div class="period-info">
+            <span class="period-badge">Quotidien</span>
+            <span class="period-name">Objectifs du jour</span>
           </div>
+          <div class="period-score"><span class="pts-val" id="pts-day">0</span><span class="pts-label">pts</span></div>
         </div>
-        <hr class="section-div">
-        <div>
-          <div class="sub-title">Victoires libres du jour</div>
-          <div class="free-entries" id="free-list-day"></div>
-          <button class="toggle-btn" onclick="toggleForm('free-form-day','free-text-day')">＋ Ajouter une victoire libre</button>
-          <div class="mini-form free-add-form" id="free-form-day">
-            <div class="f-emoji-wrap"><button class="f-emoji-btn" id="f-emoji-free-day" onclick="openFormEmoji(event,'free','day')">＋</button></div>
-            <input class="f-text" type="text" placeholder="Ma victoire…" id="free-text-day">
-            <input class="f-pts" type="number" placeholder="pts" min="1" id="free-pts-day">
-            <button class="btn-mini" onclick="addFree('day')">Ajouter</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- HEBDOMADAIRE -->
-    <div class="period-section week">
-      <div class="period-head week">
-        <div class="period-info">
-          <span class="period-badge">Hebdomadaire</span>
-          <span class="period-name">Objectifs de la semaine</span>
-        </div>
-        <div class="period-score"><span class="pts-val" id="pts-week">0</span><span class="pts-label">pts</span></div>
-      </div>
-      <div class="period-body">
-        <div>
-          <div class="sub-title">Objectifs récurrents</div>
-          <div class="objectives-list" id="obj-list-week"></div>
-          <button class="toggle-btn" onclick="toggleForm('obj-form-week','obj-text-week')">＋ Ajouter un objectif récurrent</button>
-          <div class="mini-form obj-add-form" id="obj-form-week">
-            <div class="f-emoji-wrap"><button class="f-emoji-btn" id="f-emoji-obj-week" onclick="openFormEmoji(event,'obj','week')">＋</button></div>
-            <input class="f-text" type="text" placeholder="Nom de l'objectif…" id="obj-text-week">
-            <input class="f-pts" type="number" placeholder="pts" min="1" id="obj-pts-week">
-            <button class="btn-mini" onclick="addObjective('week')">Ajouter</button>
-          </div>
-        </div>
-        <hr class="section-div">
-        <div>
-          <div class="sub-title">Victoires libres de la semaine</div>
-          <div class="free-entries" id="free-list-week"></div>
-          <button class="toggle-btn" onclick="toggleForm('free-form-week','free-text-week')">＋ Ajouter une victoire libre</button>
-          <div class="mini-form free-add-form" id="free-form-week">
-            <div class="f-emoji-wrap"><button class="f-emoji-btn" id="f-emoji-free-week" onclick="openFormEmoji(event,'free','week')">＋</button></div>
-            <input class="f-text" type="text" placeholder="Ma victoire…" id="free-text-week">
-            <input class="f-pts" type="number" placeholder="pts" min="1" id="free-pts-week">
-            <button class="btn-mini" onclick="addFree('week')">Ajouter</button>
-          </div>
-        </div>
-      </div>
-    </div>
+        <div class="period-body">
+          <div>
+            <div class="sub-title">Objectifs récurrents</div>
+            <div class="objectives-list" id="obj-list-day"></div>
+            <button class="toggle-btn" onclick="toggleForm('obj-form-day','obj-text-day')">＋ Ajouter un objectif récurrent</button>
 
-    <!-- MENSUEL -->
-    <div class="period-section month">
-      <div class="period-head month">
-        <div class="period-info">
-          <span class="period-badge">Mensuel</span>
-          <span class="period-name">Objectifs du mois</span>
-        </div>
-        <div class="period-score"><span class="pts-val" id="pts-month">0</span><span class="pts-label">pts</span></div>
-      </div>
-      <div class="period-body">
-        <div>
-          <div class="sub-title">Objectifs récurrents</div>
-          <div class="objectives-list" id="obj-list-month"></div>
-          <button class="toggle-btn" onclick="toggleForm('obj-form-month','obj-text-month')">＋ Ajouter un objectif récurrent</button>
-          <div class="mini-form obj-add-form" id="obj-form-month">
-            <div class="f-emoji-wrap"><button class="f-emoji-btn" id="f-emoji-obj-month" onclick="openFormEmoji(event,'obj','month')">＋</button></div>
-            <input class="f-text" type="text" placeholder="Nom de l'objectif…" id="obj-text-month">
-            <input class="f-pts" type="number" placeholder="pts" min="1" id="obj-pts-month">
-            <button class="btn-mini" onclick="addObjective('month')">Ajouter</button>
+            <div class="mini-form obj-add-form" id="obj-form-day">
+              <div class="mode-switch">
+                <button class="mode-btn active" id="mode-obj-day-fixed" onclick="setFormMode('obj','day','fixed',event)">Fixe</button>
+                <button class="mode-btn" id="mode-obj-day-metric" onclick="setFormMode('obj','day','metric',event)">Chiffrée</button>
+              </div>
+
+              <div class="form-line">
+                <div class="f-emoji-wrap">
+                  <button class="f-emoji-btn" id="f-emoji-obj-day" onclick="openFormEmoji(event,'obj','day')">＋</button>
+                </div>
+                <input class="f-text" type="text" placeholder="Nom de l'objectif…" id="obj-text-day" />
+                <button class="btn-mini" onclick="addObjective('day')">Ajouter</button>
+              </div>
+
+              <div class="form-line" id="obj-fixed-row-day">
+                <input class="f-pts" type="number" step="0.1" min="0.1" placeholder="Points fixes" id="obj-pts-day" />
+              </div>
+
+              <div class="form-line hidden" id="obj-metric-row-day">
+                <input class="f-unit" type="text" placeholder="Unité (km, pages…)" id="obj-unit-day" />
+                <input class="f-rate" type="number" step="0.1" min="0.1" placeholder="Pts / unité" id="obj-rate-day" />
+              </div>
+            </div>
           </div>
-        </div>
-        <hr class="section-div">
-        <div>
-          <div class="sub-title">Victoires libres du mois</div>
-          <div class="free-entries" id="free-list-month"></div>
-          <button class="toggle-btn" onclick="toggleForm('free-form-month','free-text-month')">＋ Ajouter une victoire libre</button>
-          <div class="mini-form free-add-form" id="free-form-month">
-            <div class="f-emoji-wrap"><button class="f-emoji-btn" id="f-emoji-free-month" onclick="openFormEmoji(event,'free','month')">＋</button></div>
-            <input class="f-text" type="text" placeholder="Ma victoire…" id="free-text-month">
-            <input class="f-pts" type="number" placeholder="pts" min="1" id="free-pts-month">
-            <button class="btn-mini" onclick="addFree('month')">Ajouter</button>
+
+          <hr class="section-div" />
+
+          <div>
+            <div class="sub-title">Victoires libres du jour</div>
+            <div class="free-entries" id="free-list-day"></div>
+            <button class="toggle-btn" onclick="toggleForm('free-form-day','free-text-day')">＋ Ajouter une victoire libre</button>
+
+            <div class="mini-form free-add-form" id="free-form-day">
+              <div class="mode-switch">
+                <button class="mode-btn active" id="mode-free-day-fixed" onclick="setFormMode('free','day','fixed',event)">Fixe</button>
+                <button class="mode-btn" id="mode-free-day-metric" onclick="setFormMode('free','day','metric',event)">Chiffrée</button>
+              </div>
+
+              <div class="form-line">
+                <div class="f-emoji-wrap">
+                  <button class="f-emoji-btn" id="f-emoji-free-day" onclick="openFormEmoji(event,'free','day')">＋</button>
+                </div>
+                <input class="f-text" type="text" placeholder="Ma victoire…" id="free-text-day" />
+                <button class="btn-mini" onclick="addFree('day')">Ajouter</button>
+              </div>
+
+              <div class="form-line" id="free-fixed-row-day">
+                <input class="f-pts" type="number" step="0.1" min="0.1" placeholder="Points fixes" id="free-pts-day" />
+              </div>
+
+              <div class="form-line hidden" id="free-metric-row-day">
+                <input class="f-value" type="number" step="0.1" min="0" placeholder="Valeur" id="free-value-day" />
+                <input class="f-unit" type="text" placeholder="Unité (km, pages…)" id="free-unit-day" />
+                <input class="f-rate" type="number" step="0.1" min="0.1" placeholder="Pts / unité" id="free-rate-day" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-  </main>
-</div>
+      <!-- SEMAINE -->
+      <div class="period-section week">
+        <div class="period-head week">
+          <div class="period-info">
+            <span class="period-badge">Hebdomadaire</span>
+            <span class="period-name">Objectifs de la semaine</span>
+          </div>
+          <div class="period-score"><span class="pts-val" id="pts-week">0</span><span class="pts-label">pts</span></div>
+        </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+        <div class="period-body">
+          <div>
+            <div class="sub-title">Objectifs récurrents</div>
+            <div class="objectives-list" id="obj-list-week"></div>
+            <button class="toggle-btn" onclick="toggleForm('obj-form-week','obj-text-week')">＋ Ajouter un objectif récurrent</button>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAYVH8lt6Ln_fC0hlHRYUvGHLK3Jr7BgRc",
-  authDomain: "netkabloufidecembre.firebaseapp.com",
-  projectId: "netkabloufidecembre",
-  storageBucket: "netkabloufidecembre.firebasestorage.app",
-  messagingSenderId: "868019125344",
-  appId: "1:868019125344:web:85f5a965e85dc2d6c1d705"
-};
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+            <div class="mini-form obj-add-form" id="obj-form-week">
+              <div class="mode-switch">
+                <button class="mode-btn active" id="mode-obj-week-fixed" onclick="setFormMode('obj','week','fixed',event)">Fixe</button>
+                <button class="mode-btn" id="mode-obj-week-metric" onclick="setFormMode('obj','week','metric',event)">Chiffrée</button>
+              </div>
 
-// ── EMOJI LIST ─────────────────────────────────────────────────────────
-const EMOJIS = [
-  '🏆','🥇','🎯','🚀','⭐','✨','💪','🔥','🎉','🎊','🌟','💡','🧠','📚','✅',
-  '💼','💰','💸','📈','🤝','❤️','🫶','😊','😄','🥳','🌱','🌿','🍀','🌸','🌺',
-  '🏃','🧘','💤','🛌','🍎','🥗','💧','🏋️','🚴','🧗','🎵','🎨','📝','🖊️','📖',
-  '🏠','🏡','🚗','✈️','🗺️','🏖️','⛰️','🌄','🌈','☀️','🌙','⚡','🎓','🧩','🎮',
-  '👨‍💻','🛠️','🔧','⚙️','🔬','🧪','🎭','🎤','🎬','📱','💻','🖥️','⌚','📷','🎁'
-];
+              <div class="form-line">
+                <div class="f-emoji-wrap">
+                  <button class="f-emoji-btn" id="f-emoji-obj-week" onclick="openFormEmoji(event,'obj','week')">＋</button>
+                </div>
+                <input class="f-text" type="text" placeholder="Nom de l'objectif…" id="obj-text-week" />
+                <button class="btn-mini" onclick="addObjective('week')">Ajouter</button>
+              </div>
 
-// ── EMOJI → COLOR via Canvas ───────────────────────────────────────────
-const colorCache = {};
-const canvas = document.getElementById('emoji-canvas');
-const ctx    = canvas.getContext('2d', { willReadFrequently: true });
+              <div class="form-line" id="obj-fixed-row-week">
+                <input class="f-pts" type="number" step="0.1" min="0.1" placeholder="Points fixes" id="obj-pts-week" />
+              </div>
 
-function emojiToColor(emoji) {
-  if (!emoji) return null;
-  if (colorCache[emoji]) return colorCache[emoji];
-  ctx.clearRect(0, 0, 32, 32);
-  ctx.font = '28px serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(emoji, 16, 16);
-  const data = ctx.getImageData(0, 0, 32, 32).data;
-  // collect non-transparent pixels, build color buckets
-  const buckets = {};
-  for (let i = 0; i < data.length; i += 4) {
-    const a = data[i+3];
-    if (a < 60) continue;
-    const r = Math.round(data[i]   / 32) * 32;
-    const g = Math.round(data[i+1] / 32) * 32;
-    const b = Math.round(data[i+2] / 32) * 32;
-    // skip near-black and near-white and near-gray
-    const max = Math.max(r,g,b), min = Math.min(r,g,b);
-    if (max < 40) continue;
-    if (min > 210 && max - min < 30) continue;
-    if (max - min < 20) continue; // too gray
-    const key = `${r},${g},${b}`;
-    buckets[key] = (buckets[key]||0) + 1;
-  }
-  const sorted = Object.entries(buckets).sort((a,b) => b[1]-a[1]);
-  let color = null;
-  if (sorted.length > 0) {
-    const [r,g,b] = sorted[0][0].split(',').map(Number);
-    color = { r, g, b };
-  }
-  colorCache[emoji] = color;
-  return color;
-}
+              <div class="form-line hidden" id="obj-metric-row-week">
+                <input class="f-unit" type="text" placeholder="Unité (km, pages…)" id="obj-unit-week" />
+                <input class="f-rate" type="number" step="0.1" min="0.1" placeholder="Pts / unité" id="obj-rate-week" />
+              </div>
+            </div>
+          </div>
 
-function itemStyle(emoji) {
-  const c = emojiToColor(emoji);
-  if (!c) return '';
-  return `background:rgba(${c.r},${c.g},${c.b},0.10);border-color:rgba(${c.r},${c.g},${c.b},0.30);`;
-}
+          <hr class="section-div" />
 
-// ── UTILS ──────────────────────────────────────────────────────────────
-const pad = n => String(n).padStart(2,'0');
-const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          <div>
+            <div class="sub-title">Victoires libres de la semaine</div>
+            <div class="free-entries" id="free-list-week"></div>
+            <button class="toggle-btn" onclick="toggleForm('free-form-week','free-text-week')">＋ Ajouter une victoire libre</button>
 
-function todayKey() { const d=new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
-function weekKey()  { const d=new Date(); const day=d.getDay()||7; d.setDate(d.getDate()-day+1); return `W${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
-function monthKey() { const d=new Date(); return `M${d.getFullYear()}-${pad(d.getMonth()+1)}`; }
-const CK = { day: todayKey, week: weekKey, month: monthKey };
+            <div class="mini-form free-add-form" id="free-form-week">
+              <div class="mode-switch">
+                <button class="mode-btn active" id="mode-free-week-fixed" onclick="setFormMode('free','week','fixed',event)">Fixe</button>
+                <button class="mode-btn" id="mode-free-week-metric" onclick="setFormMode('free','week','metric',event)">Chiffrée</button>
+              </div>
 
-// ── SYNC ───────────────────────────────────────────────────────────────
-function setSyncStatus(s) {
-  document.getElementById('sync-dot').className = 'sync-dot ' + s;
-  document.getElementById('sync-label').textContent = s==='syncing'?'Sync…':s==='ok'?'Synchronisé':'Erreur';
-}
-async function fsGet(path) {
-  const snap = await getDoc(doc(db,...path.split('/')));
-  return snap.exists() ? snap.data() : null;
-}
-let saveTimers = {};
-function debouncedSave(key, path, data) {
-  setSyncStatus('syncing');
-  clearTimeout(saveTimers[key]);
-  saveTimers[key] = setTimeout(async () => {
-    try { await setDoc(doc(db,...path.split('/')), data, {merge:true}); setSyncStatus('ok'); }
-    catch(e) { setSyncStatus('error'); console.error(e); }
-  }, 600);
-}
+              <div class="form-line">
+                <div class="f-emoji-wrap">
+                  <button class="f-emoji-btn" id="f-emoji-free-week" onclick="openFormEmoji(event,'free','week')">＋</button>
+                </div>
+                <input class="f-text" type="text" placeholder="Ma victoire…" id="free-text-week" />
+                <button class="btn-mini" onclick="addFree('week')">Ajouter</button>
+              </div>
 
-// ── STATE ──────────────────────────────────────────────────────────────
-let state = {
-  objectives: { day:[], week:[], month:[] },
-  checks: {}, frees: {},
-  history: { day:{}, week:{}, month:{} }
-};
-let histTab = 'day';
-let activePopup = null;
+              <div class="form-line" id="free-fixed-row-week">
+                <input class="f-pts" type="number" step="0.1" min="0.1" placeholder="Points fixes" id="free-pts-week" />
+              </div>
 
-// temp emoji for current open add-form
-const formEmoji = { obj: { day:'', week:'', month:'' }, free: { day:'', week:'', month:'' } };
+              <div class="form-line hidden" id="free-metric-row-week">
+                <input class="f-value" type="number" step="0.1" min="0" placeholder="Valeur" id="free-value-week" />
+                <input class="f-unit" type="text" placeholder="Unité (km, pages…)" id="free-unit-week" />
+                <input class="f-rate" type="number" step="0.1" min="0.1" placeholder="Pts / unité" id="free-rate-week" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-// ── LOAD ───────────────────────────────────────────────────────────────
-async function loadAll() {
-  try {
-    const [o,c,f,h] = await Promise.all([fsGet('data/objectives'),fsGet('data/checks'),fsGet('data/frees'),fsGet('data/history')]);
-    if (o) state.objectives = o;
-    if (c) state.checks     = c;
-    if (f) state.frees      = f;
-    if (h) state.history    = h;
-    setSyncStatus('ok');
-  } catch(e) { setSyncStatus('error'); }
-  document.getElementById('loading').classList.add('hidden');
-  render();
-}
-const saveObjectives = () => debouncedSave('obj','data/objectives', state.objectives);
-const saveChecks     = () => debouncedSave('chk','data/checks',     state.checks);
-const saveFrees      = () => debouncedSave('fre','data/frees',      state.frees);
-const saveHistory    = () => debouncedSave('his','data/history',    state.history);
+      <!-- MOIS -->
+      <div class="period-section month">
+        <div class="period-head month">
+          <div class="period-info">
+            <span class="period-badge">Mensuel</span>
+            <span class="period-name">Objectifs du mois</span>
+          </div>
+          <div class="period-score"><span class="pts-val" id="pts-month">0</span><span class="pts-label">pts</span></div>
+        </div>
 
-// ── SCORE ──────────────────────────────────────────────────────────────
-function calcPts(p, ck) {
-  const objs=(state.objectives[p]||[]), checks=(state.checks[ck]||{}), frees=(state.frees[ck]||[]);
-  let pts=0;
-  objs.forEach(o  => { if(checks[o.id]) pts+=Number(o.pts)||0; });
-  frees.forEach(f => pts+=Number(f.pts)||0);
-  return pts;
-}
-function pushHistory(p, ck) {
-  if (!state.history[p]) state.history[p]={};
-  state.history[p][ck] = calcPts(p, ck);
-  saveHistory();
-}
+        <div class="period-body">
+          <div>
+            <div class="sub-title">Objectifs récurrents</div>
+            <div class="objectives-list" id="obj-list-month"></div>
+            <button class="toggle-btn" onclick="toggleForm('obj-form-month','obj-text-month')">＋ Ajouter un objectif récurrent</button>
 
-// ── RENDER ─────────────────────────────────────────────────────────────
-function render() { ['day','week','month'].forEach(renderPeriod); renderSidebar(); }
+            <div class="mini-form obj-add-form" id="obj-form-month">
+              <div class="mode-switch">
+                <button class="mode-btn active" id="mode-obj-month-fixed" onclick="setFormMode('obj','month','fixed',event)">Fixe</button>
+                <button class="mode-btn" id="mode-obj-month-metric" onclick="setFormMode('obj','month','metric',event)">Chiffrée</button>
+              </div>
 
-function renderPeriod(p) {
-  const ck=CK[p](), objs=state.objectives[p]||[], checks=state.checks[ck]||{}, frees=state.frees[ck]||[];
+              <div class="form-line">
+                <div class="f-emoji-wrap">
+                  <button class="f-emoji-btn" id="f-emoji-obj-month" onclick="openFormEmoji(event,'obj','month')">＋</button>
+                </div>
+                <input class="f-text" type="text" placeholder="Nom de l'objectif…" id="obj-text-month" />
+                <button class="btn-mini" onclick="addObjective('month')">Ajouter</button>
+              </div>
 
-  // objectives
-  const ol = document.getElementById(`obj-list-${p}`);
-  if (!objs.length) {
-    ol.innerHTML = `<div class="no-items">Aucun objectif récurrent — ajoutez-en un ci-dessous.</div>`;
-  } else {
-    ol.innerHTML = objs.map((o,i) => {
-      const on = !!checks[o.id];
+              <div class="form-line" id="obj-fixed-row-month">
+                <input class="f-pts" type="number" step="0.1" min="0.1" placeholder="Points fixes" id="obj-pts-month" />
+              </div>
+
+              <div class="form-line hidden" id="obj-metric-row-month">
+                <input class="f-unit" type="text" placeholder="Unité (km, pages…)" id="obj-unit-month" />
+                <input class="f-rate" type="number" step="0.1" min="0.1" placeholder="Pts / unité" id="obj-rate-month" />
+              </div>
+            </div>
+          </div>
+
+          <hr class="section-div" />
+
+          <div>
+            <div class="sub-title">Victoires libres du mois</div>
+            <div class="free-entries" id="free-list-month"></div>
+            <button class="toggle-btn" onclick="toggleForm('free-form-month','free-text-month')">＋ Ajouter une victoire libre</button>
+
+            <div class="mini-form free-add-form" id="free-form-month">
+              <div class="mode-switch">
+                <button class="mode-btn active" id="mode-free-month-fixed" onclick="setFormMode('free','month','fixed',event)">Fixe</button>
+                <button class="mode-btn" id="mode-free-month-metric" onclick="setFormMode('free','month','metric',event)">Chiffrée</button>
+              </div>
+
+              <div class="form-line">
+                <div class="f-emoji-wrap">
+                  <button class="f-emoji-btn" id="f-emoji-free-month" onclick="openFormEmoji(event,'free','month')">＋</button>
+                </div>
+                <input class="f-text" type="text" placeholder="Ma victoire…" id="free-text-month" />
+                <button class="btn-mini" onclick="addFree('month')">Ajouter</button>
+              </div>
+
+              <div class="form-line" id="free-fixed-row-month">
+                <input class="f-pts" type="number" step="0.1" min="0.1" placeholder="Points fixes" id="free-pts-month" />
+              </div>
+
+              <div class="form-line hidden" id="free-metric-row-month">
+                <input class="f-value" type="number" step="0.1" min="0" placeholder="Valeur" id="free-value-month" />
+                <input class="f-unit" type="text" placeholder="Unité (km, pages…)" id="free-unit-month" />
+                <input class="f-rate" type="number" step="0.1" min="0.1" placeholder="Pts / unité" id="free-rate-month" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYVH8lt6Ln_fC0hlHRYUvGHLK3Jr7BgRc",
+      authDomain: "netkabloufidecembre.firebaseapp.com",
+      projectId: "netkabloufidecembre",
+      storageBucket: "netkabloufidecembre.firebasestorage.app",
+      messagingSenderId: "868019125344",
+      appId: "1:868019125344:web:85f5a965e85dc2d6c1d705"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const EMOJIS = [
+      '🏆','🥇','🎯','🚀','⭐','✨','💪','🔥','🎉','🎊','🌟','💡','🧠','📚','✅',
+      '💼','💰','💸','📈','🤝','❤️','🫶','😊','😄','🥳','🌱','🌿','🍀','🌸','🌺',
+      '🏃','🧘','💤','🛌','🍎','🥗','💧','🏋️','🚴','🧗','🎵','🎨','📝','🖊️','📖',
+      '🏠','🏡','🚗','✈️','🗺️','🏖️','⛰️','🌄','🌈','☀️','🌙','⚡','🎓','🧩','🎮',
+      '👨‍💻','🛠️','🔧','⚙️','🔬','🧪','🎭','🎤','🎬','📱','💻','🖥️','⌚','📷','🎁'
+    ];
+
+    const pad = n => String(n).padStart(2, '0');
+    const round2 = n => Math.round((Number(n) || 0) * 100) / 100;
+    const esc = t => String(t ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const escAttr = t => esc(t).replace(/"/g, '&quot;');
+    const fmtInput = n => String(round2(n)).replace(',', '.');
+    const fmt = n => {
+      const v = round2(n);
+      if (Number.isInteger(v)) return String(v);
+      return String(v).replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
+    };
+
+    function todayKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+
+    function weekKey() {
+      const d = new Date();
+      const day = d.getDay() || 7;
+      d.setDate(d.getDate() - day + 1);
+      return `W${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+
+    function monthKey() {
+      const d = new Date();
+      return `M${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+    }
+
+    const CK = { day: todayKey, week: weekKey, month: monthKey };
+
+    function matchesPeriodKey(period, key) {
+      if (period === 'day') return /^\d{4}-\d{2}-\d{2}$/.test(key);
+      if (period === 'week') return /^W/.test(key);
+      return /^M/.test(key);
+    }
+
+    function uid() {
+      return Date.now().toString() + Math.random().toString(36).slice(2, 7);
+    }
+
+    const canvas = document.getElementById('emoji-canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const colorCache = {};
+
+    function emojiToColor(emoji) {
+      if (!emoji) return null;
+      if (colorCache[emoji]) return colorCache[emoji];
+      ctx.clearRect(0, 0, 32, 32);
+      ctx.font = '28px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(emoji, 16, 16);
+      const data = ctx.getImageData(0, 0, 32, 32).data;
+      const buckets = {};
+
+      for (let i = 0; i < data.length; i += 4) {
+        const a = data[i+3];
+        if (a < 60) continue;
+        const r = Math.round(data[i] / 32) * 32;
+        const g = Math.round(data[i+1] / 32) * 32;
+        const b = Math.round(data[i+2] / 32) * 32;
+        const max = Math.max(r,g,b), min = Math.min(r,g,b);
+        if (max < 40) continue;
+        if (min > 210 && max - min < 30) continue;
+        if (max - min < 20) continue;
+        const key = `${r},${g},${b}`;
+        buckets[key] = (buckets[key] || 0) + 1;
+      }
+
+      const sorted = Object.entries(buckets).sort((a,b) => b[1] - a[1]);
+      let color = null;
+      if (sorted.length > 0) {
+        const [r,g,b] = sorted[0][0].split(',').map(Number);
+        color = { r, g, b };
+      }
+      colorCache[emoji] = color;
+      return color;
+    }
+
+    function itemStyle(emoji) {
+      const c = emojiToColor(emoji);
+      if (!c) return '';
+      return `background:rgba(${c.r},${c.g},${c.b},0.10);border-color:rgba(${c.r},${c.g},${c.b},0.30);`;
+    }
+
+    function setSyncStatus(s) {
+      document.getElementById('sync-dot').className = 'sync-dot ' + s;
+      document.getElementById('sync-label').textContent =
+        s === 'syncing' ? 'Sync…' :
+        s === 'ok' ? 'Synchronisé' :
+        'Erreur';
+    }
+
+    async function fsGet(path) {
+      const snap = await getDoc(doc(db, ...path.split('/')));
+      return snap.exists() ? snap.data() : null;
+    }
+
+    let saveTimers = {};
+    function debouncedSave(key, path, data) {
+      setSyncStatus('syncing');
+      clearTimeout(saveTimers[key]);
+      saveTimers[key] = setTimeout(async () => {
+        try {
+          await setDoc(doc(db, ...path.split('/')), data, { merge: true });
+          setSyncStatus('ok');
+        } catch (e) {
+          setSyncStatus('error');
+          console.error(e);
+        }
+      }, 500);
+    }
+
+    function normalizeObjective(o) {
+      if (!o) return null;
+      if (o.mode === 'metric') {
+        return {
+          id: o.id || uid(),
+          text: o.text || '',
+          mode: 'metric',
+          unit: (o.unit || 'unité').trim() || 'unité',
+          ptsPerUnit: round2(o.ptsPerUnit ?? o.rate ?? 1) || 1,
+          emoji: o.emoji || ''
+        };
+      }
+      return {
+        id: o.id || uid(),
+        text: o.text || '',
+        mode: 'fixed',
+        pts: round2(o.pts ?? 1) || 1,
+        emoji: o.emoji || ''
+      };
+    }
+
+    function normalizeFree(f) {
+      if (!f) return null;
+      if (f.mode === 'metric') {
+        return {
+          id: f.id || uid(),
+          text: f.text || '',
+          mode: 'metric',
+          value: round2(f.value ?? 0),
+          unit: (f.unit || 'unité').trim() || 'unité',
+          ptsPerUnit: round2(f.ptsPerUnit ?? f.rate ?? 1) || 1,
+          emoji: f.emoji || ''
+        };
+      }
+      return {
+        id: f.id || uid(),
+        text: f.text || '',
+        mode: 'fixed',
+        pts: round2(f.pts ?? 1) || 1,
+        emoji: f.emoji || ''
+      };
+    }
+
+    function normalizeProgress(docData) {
+      const out = {};
+      const src = docData || {};
+      Object.keys(src).forEach(ck => {
+        out[ck] = {};
+        Object.keys(src[ck] || {}).forEach(id => {
+          const v = src[ck][id];
+          if (v && typeof v === 'object') {
+            out[ck][id] = {
+              checked: !!v.checked,
+              value: round2(v.value ?? 0)
+            };
+          } else {
+            out[ck][id] = {
+              checked: !!v,
+              value: 0
+            };
+          }
+        });
+      });
+      return out;
+    }
+
+    function convertOldChecksToProgress(checks) {
+      return normalizeProgress(checks || {});
+    }
+
+    let state = {
+      objectives: { day: [], week: [], month: [] },
+      progress: {},
+      frees: {},
+      history: { day: {}, week: {}, month: {} }
+    };
+
+    let histTab = 'day';
+    let activePopup = null;
+
+    const formMode = {
+      obj:  { day: 'fixed', week: 'fixed', month: 'fixed' },
+      free: { day: 'fixed', week: 'fixed', month: 'fixed' }
+    };
+
+    const formEmoji = {
+      obj:  { day: '', week: '', month: '' },
+      free: { day: '', week: '', month: '' }
+    };
+
+    function saveObjectives() { debouncedSave('obj', 'data/objectives', state.objectives); }
+    function saveProgress()   { debouncedSave('pro', 'data/progress',   state.progress); }
+    function saveFrees()      { debouncedSave('fre', 'data/frees',      state.frees); }
+    function saveHistory()    { debouncedSave('his', 'data/history',    state.history); }
+
+    function getProg(ck, id) {
+      return state.progress?.[ck]?.[id] || { checked: false, value: 0 };
+    }
+
+    function setProg(ck, id, patch) {
+      if (!state.progress[ck]) state.progress[ck] = {};
+      const cur = getProg(ck, id);
+      state.progress[ck][id] = {
+        checked: typeof patch.checked === 'boolean' ? patch.checked : !!cur.checked,
+        value: typeof patch.value !== 'undefined' ? round2(Math.max(0, Number(patch.value) || 0)) : round2(cur.value || 0)
+      };
+    }
+
+    function calcObjectivePoints(period, ck, obj) {
+      const prog = getProg(ck, obj.id);
+      if (obj.mode === 'metric') {
+        return round2((prog.value || 0) * (obj.ptsPerUnit || 1));
+      }
+      return prog.checked ? round2(obj.pts || 0) : 0;
+    }
+
+    function calcFreePoints(entry) {
+      if (entry.mode === 'metric') {
+        return round2((entry.value || 0) * (entry.ptsPerUnit || 1));
+      }
+      return round2(entry.pts || 0);
+    }
+
+    function calcPts(period, ck) {
+      const objs = state.objectives[period] || [];
+      const frees = state.frees[ck] || [];
+      let pts = 0;
+      objs.forEach(o => pts += calcObjectivePoints(period, ck, o));
+      frees.forEach(f => pts += calcFreePoints(f));
+      return round2(pts);
+    }
+
+    function pushHistory(period, ck) {
+      if (!state.history[period]) state.history[period] = {};
+      state.history[period][ck] = calcPts(period, ck);
+      saveHistory();
+    }
+
+    function rebuildHistoryForPeriod(period) {
+      const keys = new Set([
+        ...Object.keys(state.history[period] || {}),
+        ...Object.keys(state.progress || {}).filter(k => matchesPeriodKey(period, k)),
+        ...Object.keys(state.frees || {}).filter(k => matchesPeriodKey(period, k))
+      ]);
+
+      const rebuilt = {};
+      keys.forEach(ck => {
+        const hasProg = Object.keys(state.progress[ck] || {}).length > 0;
+        const hasFrees = (state.frees[ck] || []).length > 0;
+        const pts = calcPts(period, ck);
+        if (hasProg || hasFrees || pts !== 0) rebuilt[ck] = pts;
+      });
+
+      state.history[period] = rebuilt;
+      saveHistory();
+    }
+
+    async function loadAll() {
+      try {
+        const [o, progressDoc, oldChecks, freesDoc, historyDoc] = await Promise.all([
+          fsGet('data/objectives'),
+          fsGet('data/progress'),
+          fsGet('data/checks'),
+          fsGet('data/frees'),
+          fsGet('data/history')
+        ]);
+
+        state.objectives = {
+          day:   (o?.day   || []).map(normalizeObjective).filter(Boolean),
+          week:  (o?.week  || []).map(normalizeObjective).filter(Boolean),
+          month: (o?.month || []).map(normalizeObjective).filter(Boolean)
+        };
+
+        state.progress = progressDoc
+          ? normalizeProgress(progressDoc)
+          : convertOldChecksToProgress(oldChecks);
+
+        state.frees = {};
+        Object.keys(freesDoc || {}).forEach(ck => {
+          state.frees[ck] = (freesDoc[ck] || []).map(normalizeFree).filter(Boolean);
+        });
+
+        state.history = {
+          day: historyDoc?.day || {},
+          week: historyDoc?.week || {},
+          month: historyDoc?.month || {}
+        };
+
+        setSyncStatus('ok');
+      } catch (e) {
+        console.error(e);
+        setSyncStatus('error');
+      }
+
+      document.getElementById('loading').classList.add('hidden');
+      ['day','week','month'].forEach(p => updateFormModeUI('obj', p));
+      ['day','week','month'].forEach(p => updateFormModeUI('free', p));
+      render();
+    }
+
+    function render() {
+      ['day', 'week', 'month'].forEach(renderPeriod);
+      renderSidebar();
+    }
+
+    function renderPeriod(period) {
+      const ck = CK[period]();
+      const objs = state.objectives[period] || [];
+      const frees = state.frees[ck] || [];
+
+      const ol = document.getElementById(`obj-list-${period}`);
+      if (!objs.length) {
+        ol.innerHTML = `<div class="no-items">Aucun objectif récurrent — ajoute-en un ci-dessous.</div>`;
+      } else {
+        ol.innerHTML = objs.map(o => renderObjectiveRow(period, ck, o)).join('');
+        initDrag(ol, 'obj', period, ck);
+      }
+
+      const fl = document.getElementById(`free-list-${period}`);
+      if (!frees.length) {
+        fl.innerHTML = `<div class="no-items">Aucune victoire libre pour cette période.</div>`;
+      } else {
+        fl.innerHTML = frees.map(f => renderFreeRow(period, ck, f)).join('');
+        initDrag(fl, 'free', period, ck);
+      }
+
+      const pts = calcPts(period, ck);
+      const el = document.getElementById(`pts-${period}`);
+      el.textContent = fmt(pts);
+      el.classList.remove('pop');
+      void el.offsetWidth;
+      el.classList.add('pop');
+    }
+
+    function renderObjectiveRow(period, ck, o) {
+      const prog = getProg(ck, o.id);
+      const isFixed = o.mode === 'fixed';
+      const isActive = isFixed ? !!prog.checked : (prog.value || 0) > 0;
+      const earned = calcObjectivePoints(period, ck, o);
       const style = itemStyle(o.emoji);
       const emoji = o.emoji || '';
-      return `<div class="obj-item${on?' checked':''}" id="oi-${p}-${o.id}" data-id="${o.id}" style="${style}">
-        <div class="drag-handle" data-drag="obj" data-period="${p}" data-id="${o.id}">⠿</div>
-        <div class="custom-check" onclick="window.toggleCheck('${p}','${o.id}')">${on?'✓':''}</div>
-        <div class="item-emoji${emoji?'':' empty'}" onclick="window.openItemEmoji(event,'obj','${p}','${o.id}')" title="Changer l'emoji">${emoji||'○'}</div>
-        <div class="obj-text" onclick="window.toggleCheck('${p}','${o.id}')">${esc(o.text)}</div>
-        <div class="obj-pts-wrap">
-          <div class="obj-pts" onclick="window.openPtsEditor(event,'obj','${p}','${o.id}',${o.pts})">+${o.pts} pts</div>
-        </div>
-        <button class="obj-delete" onclick="window.deleteObj('${p}','${o.id}')">✕</button>
-      </div>`;
-    }).join('');
-    initDrag(ol, 'obj', p, null);
-  }
+      const sub = isFixed
+        ? `${fmt(o.pts)} pt${Number(o.pts) > 1 ? 's' : ''} fixe${Number(o.pts) > 1 ? 's' : ''}`
+        : `${fmt(o.ptsPerUnit)} pt / ${esc(o.unit || 'unité')}`;
 
-  // frees
-  const fl = document.getElementById(`free-list-${p}`);
-  if (!frees.length) {
-    fl.innerHTML = `<div class="no-items">Aucune victoire libre pour cette période.</div>`;
-  } else {
-    fl.innerHTML = frees.map((f,i) => {
+      return `
+        <div class="obj-item${isActive ? ' checked' : ''}" data-id="${o.id}" style="${style}">
+          <div class="drag-handle" data-drag="obj" data-period="${period}" data-id="${o.id}">⠿</div>
+          ${isFixed
+            ? `<div class="custom-check" onclick="window.toggleCheck('${period}','${o.id}')">${prog.checked ? '✓' : ''}</div>`
+            : `<div class="metric-tag">x</div>`
+          }
+          <div class="item-emoji${emoji ? '' : ' empty'}" onclick="window.openItemEmoji(event,'obj','${period}','${o.id}')" title="Changer l'emoji">${emoji || '○'}</div>
+
+          <div class="item-main">
+            <div class="obj-text ${isFixed && prog.checked ? 'fixed-strike' : ''}" ${isFixed ? `onclick="window.toggleCheck('${period}','${o.id}')"` : ''}>${esc(o.text)}</div>
+            <div class="obj-sub">${sub}</div>
+          </div>
+
+          ${isFixed ? '' : `
+            <div class="qty-box">
+              <button onclick="window.bumpObjValue('${period}','${o.id}',-1)">−</button>
+              <input type="number" step="0.1" min="0" value="${fmtInput(prog.value || 0)}" onchange="window.setObjValue('${period}','${o.id}',this.value)" onclick="event.stopPropagation()" />
+              <span class="qty-unit">${esc(o.unit || 'u')}</span>
+              <button onclick="window.bumpObjValue('${period}','${o.id}',1)">+</button>
+            </div>
+          `}
+
+          <div class="obj-pts-wrap">
+            <div class="obj-pts" onclick="${isFixed
+              ? `window.openPtsEditor(event,'obj','${period}','${o.id}',${o.pts})`
+              : `window.openMetricEditor(event,'obj','${period}','${o.id}')`
+            }">+${fmt(earned)} pts</div>
+          </div>
+
+          <button class="obj-delete" onclick="window.deleteObj('${period}','${o.id}')">✕</button>
+        </div>
+      `;
+    }
+
+    function renderFreeRow(period, ck, f) {
+      const isFixed = f.mode === 'fixed';
+      const earned = calcFreePoints(f);
       const style = itemStyle(f.emoji);
       const emoji = f.emoji || '';
-      return `<div class="free-item" id="fi-${p}-${f.id}" data-id="${f.id}" style="${style}">
-        <div class="free-drag" data-drag="free" data-period="${p}" data-id="${f.id}">⠿</div>
-        <div class="item-emoji${emoji?'':' empty'}" onclick="window.openItemEmoji(event,'free','${p}','${f.id}')" title="Changer l'emoji">${emoji||'○'}</div>
-        <div class="free-text">${esc(f.text)}</div>
-        <div class="free-pts-wrap">
-          <div class="free-pts" onclick="window.openPtsEditor(event,'free','${p}','${f.id}',${f.pts})">+${f.pts} pts</div>
+      const sub = isFixed
+        ? `${fmt(f.pts)} pt${Number(f.pts) > 1 ? 's' : ''} fixe${Number(f.pts) > 1 ? 's' : ''}`
+        : `${fmt(f.ptsPerUnit)} pt / ${esc(f.unit || 'unité')}`;
+
+      return `
+        <div class="free-item" data-id="${f.id}" style="${style}">
+          <div class="free-drag" data-drag="free" data-period="${period}" data-id="${f.id}">⠿</div>
+          <div class="item-emoji${emoji ? '' : ' empty'}" onclick="window.openItemEmoji(event,'free','${period}','${f.id}')" title="Changer l'emoji">${emoji || '○'}</div>
+
+          <div class="item-main">
+            <div class="free-text">${esc(f.text)}</div>
+            <div class="free-sub">${sub}</div>
+          </div>
+
+          ${isFixed ? '' : `
+            <div class="qty-box">
+              <button onclick="window.bumpFreeValue('${period}','${f.id}',-1)">−</button>
+              <input type="number" step="0.1" min="0" value="${fmtInput(f.value || 0)}" onchange="window.setFreeValue('${period}','${f.id}',this.value)" onclick="event.stopPropagation()" />
+              <span class="qty-unit">${esc(f.unit || 'u')}</span>
+              <button onclick="window.bumpFreeValue('${period}','${f.id}',1)">+</button>
+            </div>
+          `}
+
+          <div class="free-pts-wrap">
+            <div class="free-pts" onclick="${isFixed
+              ? `window.openPtsEditor(event,'free','${period}','${f.id}',${f.pts})`
+              : `window.openMetricEditor(event,'free','${period}','${f.id}')`
+            }">+${fmt(earned)} pts</div>
+          </div>
+
+          <button class="free-del" onclick="window.deleteFree('${period}','${f.id}')">✕</button>
         </div>
-        <button class="free-del" onclick="window.deleteFree('${p}','${f.id}')">✕</button>
-      </div>`;
-    }).join('');
-    initDrag(fl, 'free', p, ck);
-  }
-
-  const pts = calcPts(p, ck);
-  const el = document.getElementById(`pts-${p}`);
-  el.textContent = pts;
-  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
-}
-
-function renderSidebar() {
-  ['day','week','month'].forEach(p => {
-    const ck=CK[p](), objs=state.objectives[p]||[], checks=state.checks[ck]||{}, frees=state.frees[ck]||[];
-    const checkedN = objs.filter(o=>checks[o.id]).length;
-    const total    = calcPts(p, ck);
-    document.getElementById(`sc-${p}`).textContent = total;
-    const extra = frees.length > 0 ? ` + ${frees.length} libre${frees.length>1?'s':''}` : '';
-    document.getElementById(`sc-${p}-detail`).textContent = `${checkedN} / ${objs.length} objectifs${extra}`;
-  });
-  renderHistory();
-}
-function renderHistory() {
-  const data=state.history[histTab]||{}, hl=document.getElementById('history-list');
-  const keys=Object.keys(data).sort().reverse();
-  if (!keys.length) { hl.innerHTML=`<div class="no-hist">Aucun historique encore.</div>`; return; }
-  hl.innerHTML = keys.slice(0,25).map(k =>
-    `<div class="hist-row"><span class="hist-date">${k.replace(/^[WM]/,'')}</span><span class="hist-pts ${histTab}">${data[k]} pts</span></div>`
-  ).join('');
-}
-
-// ── EMOJI PICKER ───────────────────────────────────────────────────────
-function buildEmojiPicker(onSelect, onClear) {
-  const div = document.createElement('div');
-  div.className = 'emoji-picker-popup';
-  div.innerHTML = `
-    <input class="emoji-search" placeholder="Rechercher…" oninput="filterEmojis(this,event)">
-    <div class="emoji-grid" id="ep-grid"></div>
-    <button class="emoji-clear">✕ Retirer l'emoji</button>`;
-  fillEmojiGrid(div.querySelector('#ep-grid'), EMOJIS, onSelect);
-  div.querySelector('.emoji-search').addEventListener('input', e => {
-    const q = e.target.value.trim().toLowerCase();
-    const filtered = q ? EMOJIS.filter(em => em.includes(q)) : EMOJIS;
-    fillEmojiGrid(div.querySelector('#ep-grid'), filtered, onSelect);
-  });
-  div.querySelector('.emoji-clear').addEventListener('click', () => { onClear(); closePopup(); });
-  return div;
-}
-function fillEmojiGrid(grid, list, onSelect) {
-  if (!list.length) { grid.innerHTML=`<div class="emoji-none">Aucun résultat</div>`; return; }
-  grid.innerHTML = list.map(em => `<button class="emoji-btn" data-em="${em}">${em}</button>`).join('');
-  grid.querySelectorAll('.emoji-btn').forEach(btn => {
-    btn.addEventListener('click', () => { onSelect(btn.dataset.em); closePopup(); });
-  });
-}
-
-function closePopup() { if (activePopup) { activePopup.remove(); activePopup=null; } }
-
-// Open emoji picker on an EXISTING item
-window.openItemEmoji = function(e, type, p, id) {
-  e.stopPropagation();
-  closePopup();
-  const wrap = e.currentTarget.parentElement; // obj-item or free-item
-  const onSelect = emoji => {
-    if (type === 'obj') {
-      const o = (state.objectives[p]||[]).find(x=>x.id===id);
-      if (o) { o.emoji=emoji; saveObjectives(); }
-    } else {
-      Object.keys(state.frees).forEach(ck => {
-        const f=(state.frees[ck]||[]).find(x=>x.id===id);
-        if (f) f.emoji=emoji;
-      });
-      saveFrees();
+      `;
     }
-    renderPeriod(p);
-  };
-  const onClear = () => {
-    if (type === 'obj') {
-      const o = (state.objectives[p]||[]).find(x=>x.id===id);
-      if (o) { o.emoji=''; saveObjectives(); }
-    } else {
-      Object.keys(state.frees).forEach(ck => {
-        const f=(state.frees[ck]||[]).find(x=>x.id===id);
-        if (f) f.emoji='';
+
+    function renderSidebar() {
+      ['day','week','month'].forEach(period => {
+        const ck = CK[period]();
+        const objs = state.objectives[period] || [];
+        const frees = state.frees[ck] || [];
+        const total = calcPts(period, ck);
+
+        const fixedObjs = objs.filter(o => o.mode === 'fixed');
+        const metricObjs = objs.filter(o => o.mode === 'metric');
+        const fixedDone = fixedObjs.filter(o => getProg(ck, o.id).checked).length;
+        const metricDone = metricObjs.filter(o => (getProg(ck, o.id).value || 0) > 0).length;
+
+        document.getElementById(`sc-${period}`).textContent = fmt(total);
+
+        const parts = [];
+        if (fixedObjs.length) parts.push(`${fixedDone}/${fixedObjs.length} fixes`);
+        if (metricObjs.length) parts.push(`${metricDone}/${metricObjs.length} chiffrés`);
+        if (frees.length) parts.push(`${frees.length} libre${frees.length > 1 ? 's' : ''}`);
+
+        document.getElementById(`sc-${period}-detail`).textContent = parts.length ? parts.join(' • ') : '—';
       });
-      saveFrees();
+
+      renderHistory();
     }
-    renderPeriod(p);
-  };
-  const picker = buildEmojiPicker(onSelect, onClear);
-  wrap.style.position = 'relative';
-  wrap.appendChild(picker);
-  activePopup = picker;
-};
 
-// Open emoji picker on the ADD FORM button
-window.openFormEmoji = function(e, type, p) {
-  e.stopPropagation();
-  closePopup();
-  const btn = e.currentTarget;
-  const onSelect = emoji => {
-    formEmoji[type][p] = emoji;
-    btn.textContent = emoji;
-    btn.classList.add('has-emoji');
-  };
-  const onClear = () => {
-    formEmoji[type][p] = '';
-    btn.textContent = '＋';
-    btn.classList.remove('has-emoji');
-  };
-  const picker = buildEmojiPicker(onSelect, onClear);
-  btn.parentElement.style.position = 'relative';
-  btn.parentElement.appendChild(picker);
-  activePopup = picker;
-};
+    function renderHistory() {
+      const data = state.history[histTab] || {};
+      const hl = document.getElementById('history-list');
+      const keys = Object.keys(data).sort().reverse();
 
-// ── PTS EDITOR ────────────────────────────────────────────────────────
-window.openPtsEditor = function(e, type, p, id, currentPts) {
-  e.stopPropagation();
-  closePopup();
-  const wrap = e.currentTarget.parentElement;
-  const div = document.createElement('div');
-  div.className = 'pts-inline-editor';
-  div.innerHTML = `<span class="pts-editor-label">Points :</span><input type="number" min="1" value="${currentPts}" id="pts-edit-input"><button onclick="window.savePts('${type}','${p}','${id}')">OK</button>`;
-  wrap.style.position = 'relative';
-  wrap.appendChild(div);
-  activePopup = div;
-  const inp = div.querySelector('input');
-  inp.focus(); inp.select();
-  inp.addEventListener('keydown', ev => {
-    if (ev.key==='Enter')  window.savePts(type,p,id);
-    if (ev.key==='Escape') closePopup();
-  });
-};
+      if (!keys.length) {
+        hl.innerHTML = `<div class="no-hist">Aucun historique encore.</div>`;
+        return;
+      }
 
-window.savePts = function(type, p, id) {
-  const inp = document.getElementById('pts-edit-input');
-  if (!inp) return;
-  const newPts = parseInt(inp.value)||1;
-  closePopup();
-  if (type==='obj') {
-    const o=(state.objectives[p]||[]).find(x=>x.id===id);
-    if (o) { o.pts=newPts; saveObjectives(); }
-    Object.keys(state.checks).forEach(ck => { if (state.checks[ck]&&state.checks[ck][id]) pushHistory(p,ck); });
-  } else {
-    Object.keys(state.frees).forEach(ck => {
-      const f=(state.frees[ck]||[]).find(x=>x.id===id);
-      if (f) { f.pts=newPts; pushHistory(p,ck); }
+      hl.innerHTML = keys.slice(0, 25).map(k => `
+        <div class="hist-row">
+          <span class="hist-date">${esc(k.replace(/^[WM]/, ''))}</span>
+          <span class="hist-pts ${histTab}">${fmt(data[k])} pts</span>
+        </div>
+      `).join('');
+    }
+
+    function closePopup() {
+      if (activePopup) {
+        activePopup.remove();
+        activePopup = null;
+      }
+    }
+
+    function buildEmojiPicker(onSelect, onClear) {
+      const div = document.createElement('div');
+      div.className = 'emoji-picker-popup';
+      div.innerHTML = `
+        <input class="emoji-search" placeholder="Filtrer…" />
+        <div class="emoji-grid" id="ep-grid"></div>
+        <button class="emoji-clear">✕ Retirer l'emoji</button>
+      `;
+
+      const grid = div.querySelector('#ep-grid');
+
+      function fill(list) {
+        if (!list.length) {
+          grid.innerHTML = `<div class="emoji-none">Aucun résultat</div>`;
+          return;
+        }
+        grid.innerHTML = list.map(em => `<button class="emoji-btn" data-em="${em}">${em}</button>`).join('');
+        grid.querySelectorAll('.emoji-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            onSelect(btn.dataset.em);
+            closePopup();
+          });
+        });
+      }
+
+      fill(EMOJIS);
+
+      div.querySelector('.emoji-search').addEventListener('input', e => {
+        const q = e.target.value.trim();
+        if (!q) return fill(EMOJIS);
+        fill(EMOJIS.filter(em => em.includes(q)));
+      });
+
+      div.querySelector('.emoji-clear').addEventListener('click', () => {
+        onClear();
+        closePopup();
+      });
+
+      return div;
+    }
+
+    window.openItemEmoji = function(e, type, period, id) {
+      e.stopPropagation();
+      closePopup();
+
+      const wrap = e.currentTarget.closest('.obj-item, .free-item');
+      const ck = CK[period]();
+
+      const onSelect = emoji => {
+        if (type === 'obj') {
+          const obj = (state.objectives[period] || []).find(x => x.id === id);
+          if (obj) {
+            obj.emoji = emoji;
+            saveObjectives();
+          }
+        } else {
+          const entry = (state.frees[ck] || []).find(x => x.id === id);
+          if (entry) {
+            entry.emoji = emoji;
+            saveFrees();
+          }
+        }
+        renderPeriod(period);
+      };
+
+      const onClear = () => {
+        if (type === 'obj') {
+          const obj = (state.objectives[period] || []).find(x => x.id === id);
+          if (obj) {
+            obj.emoji = '';
+            saveObjectives();
+          }
+        } else {
+          const entry = (state.frees[ck] || []).find(x => x.id === id);
+          if (entry) {
+            entry.emoji = '';
+            saveFrees();
+          }
+        }
+        renderPeriod(period);
+      };
+
+      const picker = buildEmojiPicker(onSelect, onClear);
+      wrap.appendChild(picker);
+      activePopup = picker;
+    };
+
+    window.openFormEmoji = function(e, type, period) {
+      e.preventDefault();
+      e.stopPropagation();
+      closePopup();
+
+      const btn = e.currentTarget;
+      const onSelect = emoji => {
+        formEmoji[type][period] = emoji;
+        btn.textContent = emoji;
+        btn.classList.add('has-emoji');
+      };
+
+      const onClear = () => {
+        formEmoji[type][period] = '';
+        btn.textContent = '＋';
+        btn.classList.remove('has-emoji');
+      };
+
+      const picker = buildEmojiPicker(onSelect, onClear);
+      btn.parentElement.appendChild(picker);
+      activePopup = picker;
+    };
+
+    window.openPtsEditor = function(e, type, period, id, currentPts) {
+      e.stopPropagation();
+      closePopup();
+
+      const wrap = e.currentTarget.parentElement;
+      const div = document.createElement('div');
+      div.className = 'pts-inline-editor';
+      div.innerHTML = `
+        <span class="pts-editor-label">Points :</span>
+        <input type="number" step="0.1" min="0.1" value="${fmtInput(currentPts)}" id="pts-edit-input" />
+        <button onclick="window.savePts('${type}','${period}','${id}')">OK</button>
+      `;
+      wrap.appendChild(div);
+      activePopup = div;
+
+      const inp = div.querySelector('input');
+      inp.focus();
+      inp.select();
+      inp.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') window.savePts(type, period, id);
+        if (ev.key === 'Escape') closePopup();
+      });
+    };
+
+    window.savePts = function(type, period, id) {
+      const inp = document.getElementById('pts-edit-input');
+      if (!inp) return;
+      const newPts = round2(Math.max(0.1, parseFloat(inp.value) || 1));
+      closePopup();
+
+      if (type === 'obj') {
+        const obj = (state.objectives[period] || []).find(x => x.id === id);
+        if (!obj) return;
+        obj.pts = newPts;
+        saveObjectives();
+        rebuildHistoryForPeriod(period);
+      } else {
+        const ck = CK[period]();
+        const entry = (state.frees[ck] || []).find(x => x.id === id);
+        if (!entry) return;
+        entry.pts = newPts;
+        saveFrees();
+        pushHistory(period, ck);
+      }
+
+      render();
+    };
+
+    window.openMetricEditor = function(e, type, period, id) {
+      e.stopPropagation();
+      closePopup();
+
+      const wrap = e.currentTarget.parentElement;
+      const ck = CK[period]();
+
+      let value = 0, unit = 'unité', rate = 1;
+
+      if (type === 'obj') {
+        const obj = (state.objectives[period] || []).find(x => x.id === id);
+        if (!obj) return;
+        const prog = getProg(ck, id);
+        value = round2(prog.value || 0);
+        unit = obj.unit || 'unité';
+        rate = round2(obj.ptsPerUnit || 1);
+      } else {
+        const entry = (state.frees[ck] || []).find(x => x.id === id);
+        if (!entry) return;
+        value = round2(entry.value || 0);
+        unit = entry.unit || 'unité';
+        rate = round2(entry.ptsPerUnit || 1);
+      }
+
+      const div = document.createElement('div');
+      div.className = 'metric-inline-editor';
+      div.innerHTML = `
+        <div class="metric-grid">
+          <div class="metric-field">
+            <label>Valeur actuelle</label>
+            <input type="number" step="0.1" min="0" id="metric-edit-value" value="${fmtInput(value)}" />
+          </div>
+          <div class="metric-field">
+            <label>Unité</label>
+            <input type="text" id="metric-edit-unit" value="${escAttr(unit)}" />
+          </div>
+          <div class="metric-field">
+            <label>Points par unité</label>
+            <input type="number" step="0.1" min="0.1" id="metric-edit-rate" value="${fmtInput(rate)}" />
+          </div>
+        </div>
+        <div class="metric-actions">
+          <button onclick="window.saveMetricConfig('${type}','${period}','${id}')">OK</button>
+        </div>
+      `;
+      wrap.appendChild(div);
+      activePopup = div;
+
+      const first = div.querySelector('input');
+      first.focus();
+      first.select();
+
+      div.querySelectorAll('input').forEach(input => {
+        input.addEventListener('keydown', ev => {
+          if (ev.key === 'Enter') window.saveMetricConfig(type, period, id);
+          if (ev.key === 'Escape') closePopup();
+        });
+      });
+    };
+
+    window.saveMetricConfig = function(type, period, id) {
+      const valueInput = document.getElementById('metric-edit-value');
+      const unitInput = document.getElementById('metric-edit-unit');
+      const rateInput = document.getElementById('metric-edit-rate');
+      if (!valueInput || !unitInput || !rateInput) return;
+
+      const value = round2(Math.max(0, parseFloat(valueInput.value) || 0));
+      const unit = (unitInput.value || '').trim() || 'unité';
+      const rate = round2(Math.max(0.1, parseFloat(rateInput.value) || 1));
+      const ck = CK[period]();
+
+      closePopup();
+
+      if (type === 'obj') {
+        const obj = (state.objectives[period] || []).find(x => x.id === id);
+        if (!obj) return;
+        obj.unit = unit;
+        obj.ptsPerUnit = rate;
+        setProg(ck, id, { value });
+        saveObjectives();
+        saveProgress();
+        rebuildHistoryForPeriod(period);
+      } else {
+        const entry = (state.frees[ck] || []).find(x => x.id === id);
+        if (!entry) return;
+        entry.value = value;
+        entry.unit = unit;
+        entry.ptsPerUnit = rate;
+        saveFrees();
+        pushHistory(period, ck);
+      }
+
+      render();
+    };
+
+    document.addEventListener('click', e => {
+      if (activePopup && !activePopup.contains(e.target)) closePopup();
     });
-    saveFrees();
-  }
-  render();
-};
 
-document.addEventListener('click', e => {
-  if (activePopup && !activePopup.contains(e.target)) closePopup();
-});
+    window.toggleCheck = function(period, objId) {
+      const ck = CK[period]();
+      const cur = getProg(ck, objId);
+      setProg(ck, objId, { checked: !cur.checked });
+      saveProgress();
+      pushHistory(period, ck);
+      render();
+    };
 
-// ── DRAG & DROP ────────────────────────────────────────────────────────
-function initDrag(container, type, p, ck) {
-  let dragId=null, dragEl=null;
-  const itemSel = type==='obj' ? '.obj-item' : '.free-item';
-  const dataDrag = type;
+    window.setObjValue = function(period, objId, value) {
+      const ck = CK[period]();
+      setProg(ck, objId, { value: round2(Math.max(0, parseFloat(value) || 0)) });
+      saveProgress();
+      pushHistory(period, ck);
+      render();
+    };
 
-  container.querySelectorAll(`[data-drag="${dataDrag}"]`).forEach(handle => {
-    handle.addEventListener('mousedown', e => { e.preventDefault(); startDrag(handle, itemSel); });
-    handle.addEventListener('touchstart', e => { startDrag(handle, itemSel); }, {passive:true});
-  });
+    window.bumpObjValue = function(period, objId, delta) {
+      const ck = CK[period]();
+      const cur = getProg(ck, objId);
+      const next = round2(Math.max(0, (cur.value || 0) + delta));
+      setProg(ck, objId, { value: next });
+      saveProgress();
+      pushHistory(period, ck);
+      render();
+    };
 
-  function startDrag(handle, sel) {
-    dragId = handle.dataset.id;
-    dragEl = handle.closest(sel);
-    dragEl.classList.add('dragging');
-  }
+    window.setFreeValue = function(period, id, value) {
+      const ck = CK[period]();
+      const entry = (state.frees[ck] || []).find(x => x.id === id);
+      if (!entry) return;
+      entry.value = round2(Math.max(0, parseFloat(value) || 0));
+      saveFrees();
+      pushHistory(period, ck);
+      render();
+    };
 
-  function getTarget(y) {
-    return [...container.querySelectorAll(`${itemSel}:not(.dragging)`)].find(el => {
-      const r = el.getBoundingClientRect();
-      return y < r.top + r.height/2;
+    window.bumpFreeValue = function(period, id, delta) {
+      const ck = CK[period]();
+      const entry = (state.frees[ck] || []).find(x => x.id === id);
+      if (!entry) return;
+      entry.value = round2(Math.max(0, (entry.value || 0) + delta));
+      saveFrees();
+      pushHistory(period, ck);
+      render();
+    };
+
+    window.addObjective = function(period) {
+      const textEl = document.getElementById(`obj-text-${period}`);
+      const text = textEl.value.trim();
+      if (!text) {
+        textEl.focus();
+        return;
+      }
+
+      const mode = formMode.obj[period];
+      const emoji = formEmoji.obj[period] || '';
+
+      if (!state.objectives[period]) state.objectives[period] = [];
+
+      if (mode === 'fixed') {
+        const ptsEl = document.getElementById(`obj-pts-${period}`);
+        const pts = round2(Math.max(0.1, parseFloat(ptsEl.value) || 1));
+        state.objectives[period].push({
+          id: uid(),
+          text,
+          mode: 'fixed',
+          pts,
+          emoji
+        });
+        ptsEl.value = '';
+      } else {
+        const unitEl = document.getElementById(`obj-unit-${period}`);
+        const rateEl = document.getElementById(`obj-rate-${period}`);
+        const unit = (unitEl.value || '').trim() || 'unité';
+        const ptsPerUnit = round2(Math.max(0.1, parseFloat(rateEl.value) || 1));
+        state.objectives[period].push({
+          id: uid(),
+          text,
+          mode: 'metric',
+          unit,
+          ptsPerUnit,
+          emoji
+        });
+        unitEl.value = '';
+        rateEl.value = '';
+      }
+
+      saveObjectives();
+
+      textEl.value = '';
+      textEl.focus();
+
+      formEmoji.obj[period] = '';
+      const emojiBtn = document.getElementById(`f-emoji-obj-${period}`);
+      emojiBtn.textContent = '＋';
+      emojiBtn.classList.remove('has-emoji');
+
+      render();
+    };
+
+    window.addFree = function(period) {
+      const ck = CK[period]();
+      const textEl = document.getElementById(`free-text-${period}`);
+      const text = textEl.value.trim();
+      if (!text) {
+        textEl.focus();
+        return;
+      }
+
+      const mode = formMode.free[period];
+      const emoji = formEmoji.free[period] || '';
+
+      if (!state.frees[ck]) state.frees[ck] = [];
+
+      if (mode === 'fixed') {
+        const ptsEl = document.getElementById(`free-pts-${period}`);
+        const pts = round2(Math.max(0.1, parseFloat(ptsEl.value) || 1));
+        state.frees[ck].push({
+          id: uid(),
+          text,
+          mode: 'fixed',
+          pts,
+          emoji
+        });
+        ptsEl.value = '';
+      } else {
+        const valueEl = document.getElementById(`free-value-${period}`);
+        const unitEl = document.getElementById(`free-unit-${period}`);
+        const rateEl = document.getElementById(`free-rate-${period}`);
+        const value = round2(Math.max(0, parseFloat(valueEl.value) || 0));
+        const unit = (unitEl.value || '').trim() || 'unité';
+        const ptsPerUnit = round2(Math.max(0.1, parseFloat(rateEl.value) || 1));
+
+        state.frees[ck].push({
+          id: uid(),
+          text,
+          mode: 'metric',
+          value,
+          unit,
+          ptsPerUnit,
+          emoji
+        });
+
+        valueEl.value = '';
+        unitEl.value = '';
+        rateEl.value = '';
+      }
+
+      saveFrees();
+      pushHistory(period, ck);
+
+      textEl.value = '';
+      textEl.focus();
+
+      formEmoji.free[period] = '';
+      const emojiBtn = document.getElementById(`f-emoji-free-${period}`);
+      emojiBtn.textContent = '＋';
+      emojiBtn.classList.remove('has-emoji');
+
+      render();
+    };
+
+    window.deleteObj = function(period, objId) {
+      state.objectives[period] = (state.objectives[period] || []).filter(o => o.id !== objId);
+      saveObjectives();
+
+      Object.keys(state.progress).forEach(ck => {
+        if (state.progress[ck]) delete state.progress[ck][objId];
+      });
+      saveProgress();
+
+      rebuildHistoryForPeriod(period);
+      render();
+    };
+
+    window.deleteFree = function(period, id) {
+      const ck = CK[period]();
+      state.frees[ck] = (state.frees[ck] || []).filter(f => f.id !== id);
+      saveFrees();
+      pushHistory(period, ck);
+      render();
+    };
+
+    window.toggleForm = function(formId, focusId) {
+      const form = document.getElementById(formId);
+      form.classList.toggle('open');
+      if (form.classList.contains('open')) {
+        document.getElementById(focusId).focus();
+      }
+    };
+
+    function updateFormModeUI(type, period) {
+      const mode = formMode[type][period];
+
+      document.getElementById(`mode-${type}-${period}-fixed`).classList.toggle('active', mode === 'fixed');
+      document.getElementById(`mode-${type}-${period}-metric`).classList.toggle('active', mode === 'metric');
+
+      document.getElementById(`${type}-fixed-row-${period}`).classList.toggle('hidden', mode !== 'fixed');
+      document.getElementById(`${type}-metric-row-${period}`).classList.toggle('hidden', mode !== 'metric');
+    }
+
+    window.setFormMode = function(type, period, mode, event) {
+      event.preventDefault();
+      formMode[type][period] = mode;
+      updateFormModeUI(type, period);
+    };
+
+    window.setHistTab = function(tab, el) {
+      histTab = tab;
+      document.querySelectorAll('.hist-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      renderHistory();
+    };
+
+    function initDrag(container, type, period, ck) {
+      let dragId = null;
+      let dragEl = null;
+      const itemSel = type === 'obj' ? '.obj-item' : '.free-item';
+      const dataDrag = type;
+
+      container.querySelectorAll(`[data-drag="${dataDrag}"]`).forEach(handle => {
+        handle.addEventListener('mousedown', e => {
+          e.preventDefault();
+          startDrag(handle, itemSel);
+        });
+        handle.addEventListener('touchstart', () => {
+          startDrag(handle, itemSel);
+        }, { passive: true });
+      });
+
+      function startDrag(handle, sel) {
+        dragId = handle.dataset.id;
+        dragEl = handle.closest(sel);
+        if (dragEl) dragEl.classList.add('dragging');
+      }
+
+      function getTarget(y) {
+        return [...container.querySelectorAll(`${itemSel}:not(.dragging)`)].find(el => {
+          const r = el.getBoundingClientRect();
+          return y < r.top + r.height / 2;
+        });
+      }
+
+      function onMove(y) {
+        if (!dragEl) return;
+        container.querySelectorAll(itemSel).forEach(el => el.classList.remove('drag-over'));
+        const t = getTarget(y);
+        if (t) t.classList.add('drag-over');
+      }
+
+      container.addEventListener('mousemove', e => onMove(e.clientY));
+      container.addEventListener('touchmove', e => onMove(e.touches[0].clientY), { passive: true });
+
+      function drop(y) {
+        if (!dragEl || !dragId) return;
+        dragEl.classList.remove('dragging');
+        container.querySelectorAll(itemSel).forEach(el => el.classList.remove('drag-over'));
+
+        const target = getTarget(y);
+        const arr = type === 'obj' ? (state.objectives[period] || []) : (state.frees[ck] || []);
+        const fromIdx = arr.findIndex(x => x.id === dragId);
+
+        if (fromIdx === -1) {
+          dragEl = null;
+          dragId = null;
+          return;
+        }
+
+        const [moved] = arr.splice(fromIdx, 1);
+        if (target) {
+          const toIdx = arr.findIndex(x => x.id === target.dataset.id);
+          arr.splice(toIdx, 0, moved);
+        } else {
+          arr.push(moved);
+        }
+
+        if (type === 'obj') {
+          state.objectives[period] = arr;
+          saveObjectives();
+        } else {
+          state.frees[ck] = arr;
+          saveFrees();
+        }
+
+        renderPeriod(period);
+        renderSidebar();
+        dragEl = null;
+        dragId = null;
+      }
+
+      document.addEventListener('mouseup', e => { if (dragEl) drop(e.clientY); });
+      document.addEventListener('touchend', e => { if (dragEl) drop(e.changedTouches[0].clientY); });
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      const id = document.activeElement?.id || '';
+
+      ['day','week','month'].forEach(period => {
+        if (
+          id === `obj-text-${period}` ||
+          id === `obj-pts-${period}` ||
+          id === `obj-unit-${period}` ||
+          id === `obj-rate-${period}`
+        ) {
+          window.addObjective(period);
+        }
+
+        if (
+          id === `free-text-${period}` ||
+          id === `free-pts-${period}` ||
+          id === `free-value-${period}` ||
+          id === `free-unit-${period}` ||
+          id === `free-rate-${period}`
+        ) {
+          window.addFree(period);
+        }
+      });
     });
-  }
 
-  function onMove(y) {
-    if (!dragEl) return;
-    container.querySelectorAll(itemSel).forEach(el=>el.classList.remove('drag-over'));
-    const t=getTarget(y); if(t) t.classList.add('drag-over');
-  }
-  container.addEventListener('mousemove', e => onMove(e.clientY));
-  container.addEventListener('touchmove', e => onMove(e.touches[0].clientY), {passive:true});
+    document.getElementById('date-display').textContent =
+      new Date().toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
 
-  function drop(y) {
-    if (!dragEl||!dragId) return;
-    dragEl.classList.remove('dragging');
-    container.querySelectorAll(itemSel).forEach(el=>el.classList.remove('drag-over'));
-    const target = getTarget(y);
-    const arr = type==='obj' ? (state.objectives[p]||[]) : (state.frees[ck]||[]);
-    const fromIdx = arr.findIndex(x=>x.id===dragId);
-    if (fromIdx===-1) { dragEl=null; dragId=null; return; }
-    const [moved] = arr.splice(fromIdx,1);
-    if (target) { const toIdx=arr.findIndex(x=>x.id===target.dataset.id); arr.splice(toIdx,0,moved); }
-    else arr.push(moved);
-    if (type==='obj') { state.objectives[p]=arr; saveObjectives(); }
-    else              { state.frees[ck]=arr;      saveFrees(); }
-    renderPeriod(p); renderSidebar();
-    dragEl=null; dragId=null;
-  }
-  document.addEventListener('mouseup',  e => { if(dragEl) drop(e.clientY); });
-  document.addEventListener('touchend', e => { if(dragEl) drop(e.changedTouches[0].clientY); });
-}
-
-// ── ACTIONS ────────────────────────────────────────────────────────────
-window.toggleCheck = function(p, objId) {
-  const ck=CK[p]();
-  if (!state.checks[ck]) state.checks[ck]={};
-  state.checks[ck][objId]=!state.checks[ck][objId];
-  saveChecks(); pushHistory(p,ck); renderPeriod(p); renderSidebar();
-};
-
-window.addObjective = function(p) {
-  const textEl=document.getElementById(`obj-text-${p}`), ptsEl=document.getElementById(`obj-pts-${p}`);
-  const text=textEl.value.trim(); if(!text){textEl.focus();return;}
-  const pts=parseInt(ptsEl.value)||1;
-  const emoji=formEmoji.obj[p]||'';
-  if (!state.objectives[p]) state.objectives[p]=[];
-  state.objectives[p].push({id:Date.now()+'',text,pts,emoji});
-  saveObjectives();
-  textEl.value=''; ptsEl.value='';
-  // reset emoji btn
-  formEmoji.obj[p]='';
-  const btn=document.getElementById(`f-emoji-obj-${p}`);
-  if(btn){btn.textContent='＋';btn.classList.remove('has-emoji');}
-  textEl.focus();
-  renderPeriod(p); renderSidebar();
-};
-
-window.deleteObj = function(p, objId) {
-  state.objectives[p]=(state.objectives[p]||[]).filter(o=>o.id!==objId);
-  saveObjectives();
-  Object.keys(state.checks).forEach(ck=>{if(state.checks[ck])delete state.checks[ck][objId];});
-  saveChecks(); pushHistory(p,CK[p]()); renderPeriod(p); renderSidebar();
-};
-
-window.addFree = function(p) {
-  const textEl=document.getElementById(`free-text-${p}`), ptsEl=document.getElementById(`free-pts-${p}`);
-  const text=textEl.value.trim(); if(!text){textEl.focus();return;}
-  const pts=parseInt(ptsEl.value)||1;
-  const emoji=formEmoji.free[p]||'';
-  const ck=CK[p]();
-  if (!state.frees[ck]) state.frees[ck]=[];
-  state.frees[ck].push({id:Date.now()+'',text,pts,emoji});
-  saveFrees();
-  textEl.value=''; ptsEl.value='';
-  formEmoji.free[p]='';
-  const btn=document.getElementById(`f-emoji-free-${p}`);
-  if(btn){btn.textContent='＋';btn.classList.remove('has-emoji');}
-  document.getElementById(`free-form-${p}`).classList.remove('open');
-  pushHistory(p,ck); renderPeriod(p); renderSidebar();
-};
-
-window.deleteFree = function(p, id) {
-  const ck=CK[p]();
-  state.frees[ck]=(state.frees[ck]||[]).filter(f=>f.id!==id);
-  saveFrees(); pushHistory(p,ck); renderPeriod(p); renderSidebar();
-};
-
-window.toggleForm = function(formId, focusId) {
-  const f=document.getElementById(formId);
-  f.classList.toggle('open');
-  if(f.classList.contains('open')) document.getElementById(focusId).focus();
-};
-
-window.setHistTab = function(tab, el) {
-  histTab=tab;
-  document.querySelectorAll('.hist-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active'); renderHistory();
-};
-
-document.addEventListener('keydown', e => {
-  if (e.key!=='Enter') return;
-  const id=document.activeElement?.id||'';
-  ['day','week','month'].forEach(p => {
-    if(id===`obj-text-${p}`||id===`obj-pts-${p}`) window.addObjective(p);
-    if(id===`free-text-${p}`||id===`free-pts-${p}`) window.addFree(p);
-  });
-});
-
-document.getElementById('date-display').textContent =
-  new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-
-setSyncStatus('syncing');
-loadAll();
-</script>
+    setSyncStatus('syncing');
+    loadAll();
+  </script>
 </body>
 </html>
